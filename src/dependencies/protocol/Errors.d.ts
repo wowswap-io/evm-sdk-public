@@ -16,7 +16,7 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface ErrorsInterface extends ethers.utils.Interface {
   functions: {
@@ -29,7 +29,9 @@ interface ErrorsInterface extends ethers.utils.Interface {
     "F_NOT_REGISTERED_TOKEN()": FunctionFragment;
     "F_NOT_SHORTABLE_TOKEN()": FunctionFragment;
     "F_NOT_TRADABLE_TOKEN()": FunctionFragment;
+    "F_UNINITIALIZED_PAIR_IMPLEMENTATION()": FunctionFragment;
     "F_UNINITIALIZED_RESERVE()": FunctionFragment;
+    "F_UNINITIALIZED_SHORTING_PAIR_IMPLEMENTATION()": FunctionFragment;
     "MATH_ADDITION_OVERFLOW()": FunctionFragment;
     "MATH_DIVISION_BY_ZERO()": FunctionFragment;
     "MATH_MULTIPLICATION_OVERFLOW()": FunctionFragment;
@@ -40,14 +42,18 @@ interface ErrorsInterface extends ethers.utils.Interface {
     "PG_UNKNOWN_IDENTITY()": FunctionFragment;
     "P_BORROW_LIMIT_EXCEEDED()": FunctionFragment;
     "P_DEBT_LEFT()": FunctionFragment;
+    "P_EXPIRATION_TRANSACTION_TRANSFER()": FunctionFragment;
     "P_FORBIDDEN_LIQUIDATION_CALLER()": FunctionFragment;
+    "P_FORBIDDEN_TERMINATION_CALLER()": FunctionFragment;
     "P_HEALTHY_POSITION_LIQUIDATION()": FunctionFragment;
+    "P_INACTIVE()": FunctionFragment;
     "P_INSUFFICIENT_LIQUIDITY()": FunctionFragment;
     "P_INSUFFICIENT_OUTPUT_AMOUNT()": FunctionFragment;
     "P_INSUFFICIENT_POSITION_DEPOSIT()": FunctionFragment;
     "P_INSUFFICIENT_WOW_BALANCE()": FunctionFragment;
     "P_INVALID_LEVERAGE_FACTOR()": FunctionFragment;
     "P_PRICE_THRESHOLD_OVERFLOW()": FunctionFragment;
+    "P_UNABLE_TO_TERMINATE()": FunctionFragment;
     "RF_NOT_LENDABLE()": FunctionFragment;
     "RT_FORBIDDEN_TRANSFER()": FunctionFragment;
     "RT_PAIR_NOT_FOUND()": FunctionFragment;
@@ -96,7 +102,15 @@ interface ErrorsInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "F_UNINITIALIZED_PAIR_IMPLEMENTATION",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "F_UNINITIALIZED_RESERVE",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "F_UNINITIALIZED_SHORTING_PAIR_IMPLEMENTATION",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -140,11 +154,23 @@ interface ErrorsInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "P_EXPIRATION_TRANSACTION_TRANSFER",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "P_FORBIDDEN_LIQUIDATION_CALLER",
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "P_FORBIDDEN_TERMINATION_CALLER",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "P_HEALTHY_POSITION_LIQUIDATION",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "P_INACTIVE",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -169,6 +195,10 @@ interface ErrorsInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "P_PRICE_THRESHOLD_OVERFLOW",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "P_UNABLE_TO_TERMINATE",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -245,7 +275,15 @@ interface ErrorsInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "F_UNINITIALIZED_PAIR_IMPLEMENTATION",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "F_UNINITIALIZED_RESERVE",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "F_UNINITIALIZED_SHORTING_PAIR_IMPLEMENTATION",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -289,13 +327,22 @@ interface ErrorsInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "P_EXPIRATION_TRANSACTION_TRANSFER",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "P_FORBIDDEN_LIQUIDATION_CALLER",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "P_FORBIDDEN_TERMINATION_CALLER",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "P_HEALTHY_POSITION_LIQUIDATION",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "P_INACTIVE", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "P_INSUFFICIENT_LIQUIDITY",
     data: BytesLike
@@ -318,6 +365,10 @@ interface ErrorsInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "P_PRICE_THRESHOLD_OVERFLOW",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "P_UNABLE_TO_TERMINATE",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -422,7 +473,15 @@ export class Errors extends BaseContract {
 
     F_NOT_TRADABLE_TOKEN(overrides?: CallOverrides): Promise<[string]>;
 
+    F_UNINITIALIZED_PAIR_IMPLEMENTATION(
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
     F_UNINITIALIZED_RESERVE(overrides?: CallOverrides): Promise<[string]>;
+
+    F_UNINITIALIZED_SHORTING_PAIR_IMPLEMENTATION(
+      overrides?: CallOverrides
+    ): Promise<[string]>;
 
     MATH_ADDITION_OVERFLOW(overrides?: CallOverrides): Promise<[string]>;
 
@@ -444,13 +503,23 @@ export class Errors extends BaseContract {
 
     P_DEBT_LEFT(overrides?: CallOverrides): Promise<[string]>;
 
+    P_EXPIRATION_TRANSACTION_TRANSFER(
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
     P_FORBIDDEN_LIQUIDATION_CALLER(
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    P_FORBIDDEN_TERMINATION_CALLER(
       overrides?: CallOverrides
     ): Promise<[string]>;
 
     P_HEALTHY_POSITION_LIQUIDATION(
       overrides?: CallOverrides
     ): Promise<[string]>;
+
+    P_INACTIVE(overrides?: CallOverrides): Promise<[string]>;
 
     P_INSUFFICIENT_LIQUIDITY(overrides?: CallOverrides): Promise<[string]>;
 
@@ -465,6 +534,8 @@ export class Errors extends BaseContract {
     P_INVALID_LEVERAGE_FACTOR(overrides?: CallOverrides): Promise<[string]>;
 
     P_PRICE_THRESHOLD_OVERFLOW(overrides?: CallOverrides): Promise<[string]>;
+
+    P_UNABLE_TO_TERMINATE(overrides?: CallOverrides): Promise<[string]>;
 
     RF_NOT_LENDABLE(overrides?: CallOverrides): Promise<[string]>;
 
@@ -503,7 +574,15 @@ export class Errors extends BaseContract {
 
   F_NOT_TRADABLE_TOKEN(overrides?: CallOverrides): Promise<string>;
 
+  F_UNINITIALIZED_PAIR_IMPLEMENTATION(
+    overrides?: CallOverrides
+  ): Promise<string>;
+
   F_UNINITIALIZED_RESERVE(overrides?: CallOverrides): Promise<string>;
+
+  F_UNINITIALIZED_SHORTING_PAIR_IMPLEMENTATION(
+    overrides?: CallOverrides
+  ): Promise<string>;
 
   MATH_ADDITION_OVERFLOW(overrides?: CallOverrides): Promise<string>;
 
@@ -525,9 +604,15 @@ export class Errors extends BaseContract {
 
   P_DEBT_LEFT(overrides?: CallOverrides): Promise<string>;
 
+  P_EXPIRATION_TRANSACTION_TRANSFER(overrides?: CallOverrides): Promise<string>;
+
   P_FORBIDDEN_LIQUIDATION_CALLER(overrides?: CallOverrides): Promise<string>;
 
+  P_FORBIDDEN_TERMINATION_CALLER(overrides?: CallOverrides): Promise<string>;
+
   P_HEALTHY_POSITION_LIQUIDATION(overrides?: CallOverrides): Promise<string>;
+
+  P_INACTIVE(overrides?: CallOverrides): Promise<string>;
 
   P_INSUFFICIENT_LIQUIDITY(overrides?: CallOverrides): Promise<string>;
 
@@ -540,6 +625,8 @@ export class Errors extends BaseContract {
   P_INVALID_LEVERAGE_FACTOR(overrides?: CallOverrides): Promise<string>;
 
   P_PRICE_THRESHOLD_OVERFLOW(overrides?: CallOverrides): Promise<string>;
+
+  P_UNABLE_TO_TERMINATE(overrides?: CallOverrides): Promise<string>;
 
   RF_NOT_LENDABLE(overrides?: CallOverrides): Promise<string>;
 
@@ -578,7 +665,15 @@ export class Errors extends BaseContract {
 
     F_NOT_TRADABLE_TOKEN(overrides?: CallOverrides): Promise<string>;
 
+    F_UNINITIALIZED_PAIR_IMPLEMENTATION(
+      overrides?: CallOverrides
+    ): Promise<string>;
+
     F_UNINITIALIZED_RESERVE(overrides?: CallOverrides): Promise<string>;
+
+    F_UNINITIALIZED_SHORTING_PAIR_IMPLEMENTATION(
+      overrides?: CallOverrides
+    ): Promise<string>;
 
     MATH_ADDITION_OVERFLOW(overrides?: CallOverrides): Promise<string>;
 
@@ -600,9 +695,17 @@ export class Errors extends BaseContract {
 
     P_DEBT_LEFT(overrides?: CallOverrides): Promise<string>;
 
+    P_EXPIRATION_TRANSACTION_TRANSFER(
+      overrides?: CallOverrides
+    ): Promise<string>;
+
     P_FORBIDDEN_LIQUIDATION_CALLER(overrides?: CallOverrides): Promise<string>;
 
+    P_FORBIDDEN_TERMINATION_CALLER(overrides?: CallOverrides): Promise<string>;
+
     P_HEALTHY_POSITION_LIQUIDATION(overrides?: CallOverrides): Promise<string>;
+
+    P_INACTIVE(overrides?: CallOverrides): Promise<string>;
 
     P_INSUFFICIENT_LIQUIDITY(overrides?: CallOverrides): Promise<string>;
 
@@ -615,6 +718,8 @@ export class Errors extends BaseContract {
     P_INVALID_LEVERAGE_FACTOR(overrides?: CallOverrides): Promise<string>;
 
     P_PRICE_THRESHOLD_OVERFLOW(overrides?: CallOverrides): Promise<string>;
+
+    P_UNABLE_TO_TERMINATE(overrides?: CallOverrides): Promise<string>;
 
     RF_NOT_LENDABLE(overrides?: CallOverrides): Promise<string>;
 
@@ -660,7 +765,15 @@ export class Errors extends BaseContract {
 
     F_NOT_TRADABLE_TOKEN(overrides?: CallOverrides): Promise<BigNumber>;
 
+    F_UNINITIALIZED_PAIR_IMPLEMENTATION(
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     F_UNINITIALIZED_RESERVE(overrides?: CallOverrides): Promise<BigNumber>;
+
+    F_UNINITIALIZED_SHORTING_PAIR_IMPLEMENTATION(
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     MATH_ADDITION_OVERFLOW(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -682,13 +795,23 @@ export class Errors extends BaseContract {
 
     P_DEBT_LEFT(overrides?: CallOverrides): Promise<BigNumber>;
 
+    P_EXPIRATION_TRANSACTION_TRANSFER(
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     P_FORBIDDEN_LIQUIDATION_CALLER(
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    P_FORBIDDEN_TERMINATION_CALLER(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     P_HEALTHY_POSITION_LIQUIDATION(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    P_INACTIVE(overrides?: CallOverrides): Promise<BigNumber>;
 
     P_INSUFFICIENT_LIQUIDITY(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -703,6 +826,8 @@ export class Errors extends BaseContract {
     P_INVALID_LEVERAGE_FACTOR(overrides?: CallOverrides): Promise<BigNumber>;
 
     P_PRICE_THRESHOLD_OVERFLOW(overrides?: CallOverrides): Promise<BigNumber>;
+
+    P_UNABLE_TO_TERMINATE(overrides?: CallOverrides): Promise<BigNumber>;
 
     RF_NOT_LENDABLE(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -760,7 +885,15 @@ export class Errors extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    F_UNINITIALIZED_PAIR_IMPLEMENTATION(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     F_UNINITIALIZED_RESERVE(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    F_UNINITIALIZED_SHORTING_PAIR_IMPLEMENTATION(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -798,13 +931,23 @@ export class Errors extends BaseContract {
 
     P_DEBT_LEFT(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    P_EXPIRATION_TRANSACTION_TRANSFER(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     P_FORBIDDEN_LIQUIDATION_CALLER(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    P_FORBIDDEN_TERMINATION_CALLER(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     P_HEALTHY_POSITION_LIQUIDATION(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    P_INACTIVE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     P_INSUFFICIENT_LIQUIDITY(
       overrides?: CallOverrides
@@ -827,6 +970,10 @@ export class Errors extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     P_PRICE_THRESHOLD_OVERFLOW(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    P_UNABLE_TO_TERMINATE(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

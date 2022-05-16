@@ -1,10 +1,10 @@
 import { AddressZero } from '@ethersproject/constants';
 import {
-  Pair,
+  AbstractLongPair,
+  AbstractLongPair__factory,
+  AbstractShortingPair,
+  AbstractShortingPair__factory,
   PairFactory__factory,
-  Pair__factory,
-  ShortingPair,
-  ShortingPair__factory
 } from '../dependencies/protocol';
 import { IGNORED_TRADABLES } from '../helpers/constants';
 import { byteToAddress, mapAll } from '../helpers/utils';
@@ -98,11 +98,11 @@ export class Pairs extends CoreRelevant<
     lendable: string,
     tradable: string,
     proxy?: string
-  ): Promise<Pair | undefined> {
+  ): Promise<AbstractLongPair | undefined> {
     return this._useLongPairCached(lendable, tradable, proxy).then((address) =>
       address === AddressZero
         ? undefined
-        : this.core.useContract(Pair__factory, address)
+        : this.core.useContract(AbstractLongPair__factory, address)
     );
   }
 
@@ -110,7 +110,7 @@ export class Pairs extends CoreRelevant<
     lendable: string,
     shortable: string,
     proxy?: string
-  ): Promise<ShortingPair | undefined> {
+  ): Promise<AbstractShortingPair | undefined> {
     return this._useShortPairCached(
       lendable,
       shortable,
@@ -118,7 +118,7 @@ export class Pairs extends CoreRelevant<
     ).then((address) =>
       address === AddressZero
         ? undefined
-        : this.core.useContract(ShortingPair__factory, address)
+        : this.core.useContract(AbstractShortingPair__factory, address)
     );
   }
 }

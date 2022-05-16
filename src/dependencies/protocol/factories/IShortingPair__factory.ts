@@ -131,7 +131,7 @@ const _abi = [
         type: "uint256",
       },
     ],
-    stateMutability: "view",
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -203,7 +203,7 @@ const _abi = [
         type: "uint256",
       },
     ],
-    stateMutability: "view",
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -309,6 +309,47 @@ const _abi = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "trader",
+        type: "address",
+      },
+    ],
+    name: "getTerminationConditions",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "expirationDate",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "stopLossPercentage",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "takeProfitPercentage",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "terminationReward",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct TerminationConditions",
+        name: "",
+        type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "getTotalDeposit",
     outputs: [
@@ -373,6 +414,19 @@ const _abi = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "isActive",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "address",
@@ -402,6 +456,11 @@ const _abi = [
         internalType: "address",
         name: "trader",
         type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "baseBorrowAmount",
+        type: "uint256",
       },
       {
         internalType: "uint256",
@@ -486,40 +545,6 @@ const _abi = [
         name: "trader",
         type: "address",
       },
-      {
-        internalType: "uint256",
-        name: "leverageFactor",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "amountOutMin",
-        type: "uint256",
-      },
-      {
-        internalType: "address",
-        name: "referrer",
-        type: "address",
-      },
-    ],
-    name: "openPositionWithReferrer",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "amountOut",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "trader",
-        type: "address",
-      },
     ],
     name: "positionCosts",
     outputs: [
@@ -534,7 +559,77 @@ const _abi = [
         type: "uint256",
       },
     ],
-    stateMutability: "view",
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "trader",
+        type: "address",
+      },
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "stopLossPercentage",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "takeProfitPercentage",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "deadline",
+            type: "uint256",
+          },
+          {
+            components: [
+              {
+                internalType: "uint8",
+                name: "v",
+                type: "uint8",
+              },
+              {
+                internalType: "bytes32",
+                name: "r",
+                type: "bytes32",
+              },
+              {
+                internalType: "bytes32",
+                name: "s",
+                type: "bytes32",
+              },
+            ],
+            internalType: "struct Signature",
+            name: "signature",
+            type: "tuple",
+          },
+        ],
+        internalType: "struct IPair.UpdateTerminationConditionsRequest",
+        name: "request",
+        type: "tuple",
+      },
+    ],
+    name: "setTerminationConditions",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "trader",
+        type: "address",
+      },
+    ],
+    name: "terminatePosition",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {

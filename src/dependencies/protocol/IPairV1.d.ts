@@ -17,7 +17,7 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface IPairV1Interface extends ethers.utils.Interface {
   functions: {
@@ -93,6 +93,26 @@ interface IPairV1Interface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "ChangedPosition"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Liquidated"): EventFragment;
 }
+
+export type ChangedPositionEvent = TypedEvent<
+  [string, BigNumber, BigNumber, BigNumber, BigNumber] & {
+    trader: string;
+    amount: BigNumber;
+    loan: BigNumber;
+    cost: BigNumber;
+    liquidationCost: BigNumber;
+  }
+>;
+
+export type LiquidatedEvent = TypedEvent<
+  [string, BigNumber, BigNumber, BigNumber, BigNumber] & {
+    trader: string;
+    amount: BigNumber;
+    loanPaid: BigNumber;
+    cost: BigNumber;
+    liquidationCost: BigNumber;
+  }
+>;
 
 export class IPairV1 extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -182,7 +202,13 @@ export class IPairV1 extends BaseContract {
           BigNumber,
           BigNumber,
           BigNumber,
-          BigNumber
+          BigNumber,
+          [BigNumber, BigNumber, BigNumber, BigNumber] & {
+            expirationDate: BigNumber;
+            stopLossPercentage: BigNumber;
+            takeProfitPercentage: BigNumber;
+            terminationReward: BigNumber;
+          }
         ] & {
           amount: BigNumber;
           value: BigNumber;
@@ -192,6 +218,17 @@ export class IPairV1 extends BaseContract {
           rate: BigNumber;
           currentCost: BigNumber;
           liquidationCost: BigNumber;
+          terminationConditions: [
+            BigNumber,
+            BigNumber,
+            BigNumber,
+            BigNumber
+          ] & {
+            expirationDate: BigNumber;
+            stopLossPercentage: BigNumber;
+            takeProfitPercentage: BigNumber;
+            terminationReward: BigNumber;
+          };
         }
       ] & {
         position: [
@@ -202,7 +239,13 @@ export class IPairV1 extends BaseContract {
           BigNumber,
           BigNumber,
           BigNumber,
-          BigNumber
+          BigNumber,
+          [BigNumber, BigNumber, BigNumber, BigNumber] & {
+            expirationDate: BigNumber;
+            stopLossPercentage: BigNumber;
+            takeProfitPercentage: BigNumber;
+            terminationReward: BigNumber;
+          }
         ] & {
           amount: BigNumber;
           value: BigNumber;
@@ -212,6 +255,17 @@ export class IPairV1 extends BaseContract {
           rate: BigNumber;
           currentCost: BigNumber;
           liquidationCost: BigNumber;
+          terminationConditions: [
+            BigNumber,
+            BigNumber,
+            BigNumber,
+            BigNumber
+          ] & {
+            expirationDate: BigNumber;
+            stopLossPercentage: BigNumber;
+            takeProfitPercentage: BigNumber;
+            terminationReward: BigNumber;
+          };
         };
       }
     >;
@@ -283,7 +337,13 @@ export class IPairV1 extends BaseContract {
       BigNumber,
       BigNumber,
       BigNumber,
-      BigNumber
+      BigNumber,
+      [BigNumber, BigNumber, BigNumber, BigNumber] & {
+        expirationDate: BigNumber;
+        stopLossPercentage: BigNumber;
+        takeProfitPercentage: BigNumber;
+        terminationReward: BigNumber;
+      }
     ] & {
       amount: BigNumber;
       value: BigNumber;
@@ -293,6 +353,12 @@ export class IPairV1 extends BaseContract {
       rate: BigNumber;
       currentCost: BigNumber;
       liquidationCost: BigNumber;
+      terminationConditions: [BigNumber, BigNumber, BigNumber, BigNumber] & {
+        expirationDate: BigNumber;
+        stopLossPercentage: BigNumber;
+        takeProfitPercentage: BigNumber;
+        terminationReward: BigNumber;
+      };
     }
   >;
 
@@ -363,7 +429,13 @@ export class IPairV1 extends BaseContract {
         BigNumber,
         BigNumber,
         BigNumber,
-        BigNumber
+        BigNumber,
+        [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        }
       ] & {
         amount: BigNumber;
         value: BigNumber;
@@ -373,6 +445,12 @@ export class IPairV1 extends BaseContract {
         rate: BigNumber;
         currentCost: BigNumber;
         liquidationCost: BigNumber;
+        terminationConditions: [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        };
       }
     >;
 
@@ -401,6 +479,23 @@ export class IPairV1 extends BaseContract {
   };
 
   filters: {
+    "ChangedPosition(address,uint256,uint256,uint256,uint256)"(
+      trader?: string | null,
+      amount?: null,
+      loan?: null,
+      cost?: null,
+      liquidationCost?: null
+    ): TypedEventFilter<
+      [string, BigNumber, BigNumber, BigNumber, BigNumber],
+      {
+        trader: string;
+        amount: BigNumber;
+        loan: BigNumber;
+        cost: BigNumber;
+        liquidationCost: BigNumber;
+      }
+    >;
+
     ChangedPosition(
       trader?: string | null,
       amount?: null,
@@ -413,6 +508,23 @@ export class IPairV1 extends BaseContract {
         trader: string;
         amount: BigNumber;
         loan: BigNumber;
+        cost: BigNumber;
+        liquidationCost: BigNumber;
+      }
+    >;
+
+    "Liquidated(address,uint256,uint256,uint256,uint256)"(
+      trader?: string | null,
+      amount?: null,
+      loanPaid?: null,
+      cost?: null,
+      liquidationCost?: null
+    ): TypedEventFilter<
+      [string, BigNumber, BigNumber, BigNumber, BigNumber],
+      {
+        trader: string;
+        amount: BigNumber;
+        loanPaid: BigNumber;
         cost: BigNumber;
         liquidationCost: BigNumber;
       }

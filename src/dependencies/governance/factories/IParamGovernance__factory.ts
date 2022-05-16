@@ -164,6 +164,19 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "uint256",
+        name: "noDebtLeverageFactor",
+        type: "uint256",
+      },
+    ],
+    name: "setNoDebtLeverageFactor",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "bytes32",
         name: "parameter",
         type: "bytes32",
@@ -246,6 +259,40 @@ const _abi = [
         name: "distribution",
         type: "tuple",
       },
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "deadline",
+            type: "uint256",
+          },
+          {
+            components: [
+              {
+                internalType: "uint8",
+                name: "v",
+                type: "uint8",
+              },
+              {
+                internalType: "bytes32",
+                name: "r",
+                type: "bytes32",
+              },
+              {
+                internalType: "bytes32",
+                name: "s",
+                type: "bytes32",
+              },
+            ],
+            internalType: "struct Signature",
+            name: "signature",
+            type: "tuple",
+          },
+        ],
+        internalType: "struct IParamGovernance.VotePermission",
+        name: "votePermission",
+        type: "tuple",
+      },
     ],
     name: "voteForFeeDistribution",
     outputs: [],
@@ -269,6 +316,40 @@ const _abi = [
         name: "value",
         type: "uint256",
       },
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "deadline",
+            type: "uint256",
+          },
+          {
+            components: [
+              {
+                internalType: "uint8",
+                name: "v",
+                type: "uint8",
+              },
+              {
+                internalType: "bytes32",
+                name: "r",
+                type: "bytes32",
+              },
+              {
+                internalType: "bytes32",
+                name: "s",
+                type: "bytes32",
+              },
+            ],
+            internalType: "struct Signature",
+            name: "signature",
+            type: "tuple",
+          },
+        ],
+        internalType: "struct IParamGovernance.VotePermission",
+        name: "votePermission",
+        type: "tuple",
+      },
     ],
     name: "voteForParam",
     outputs: [],
@@ -291,6 +372,40 @@ const _abi = [
         internalType: "uint256[]",
         name: "values",
         type: "uint256[]",
+      },
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "deadline",
+            type: "uint256",
+          },
+          {
+            components: [
+              {
+                internalType: "uint8",
+                name: "v",
+                type: "uint8",
+              },
+              {
+                internalType: "bytes32",
+                name: "r",
+                type: "bytes32",
+              },
+              {
+                internalType: "bytes32",
+                name: "s",
+                type: "bytes32",
+              },
+            ],
+            internalType: "struct Signature",
+            name: "signature",
+            type: "tuple",
+          },
+        ],
+        internalType: "struct IParamGovernance.VotePermission",
+        name: "votePermission",
+        type: "tuple",
       },
     ],
     name: "voteForParams",

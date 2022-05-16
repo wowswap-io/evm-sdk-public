@@ -17,7 +17,7 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface IReserveInterface extends ethers.utils.Interface {
   functions: {
@@ -39,6 +39,7 @@ interface IReserveInterface extends ethers.utils.Interface {
     "getTotalDebt()": FunctionFragment;
     "getTotalLiquidity()": FunctionFragment;
     "getUtilizationRate()": FunctionFragment;
+    "isActive()": FunctionFragment;
     "liquidate(address)": FunctionFragment;
     "liquidityOf(address)": FunctionFragment;
     "repay(address,address)": FunctionFragment;
@@ -108,6 +109,7 @@ interface IReserveInterface extends ethers.utils.Interface {
     functionFragment: "getUtilizationRate",
     values?: undefined
   ): string;
+  encodeFunctionData(functionFragment: "isActive", values?: undefined): string;
   encodeFunctionData(functionFragment: "liquidate", values: [string]): string;
   encodeFunctionData(functionFragment: "liquidityOf", values: [string]): string;
   encodeFunctionData(
@@ -179,6 +181,7 @@ interface IReserveInterface extends ethers.utils.Interface {
     functionFragment: "getUtilizationRate",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "isActive", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "liquidate", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "liquidityOf",
@@ -209,6 +212,46 @@ interface IReserveInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "Repay"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Withdraw"): EventFragment;
 }
+
+export type BorrowEvent = TypedEvent<
+  [string, string, BigNumber] & {
+    reserve: string;
+    trader: string;
+    amount: BigNumber;
+  }
+>;
+
+export type DepositEvent = TypedEvent<
+  [string, string, BigNumber] & {
+    reserve: string;
+    investor: string;
+    amount: BigNumber;
+  }
+>;
+
+export type FillEvent = TypedEvent<
+  [string, BigNumber] & { reserve: string; amount: BigNumber }
+>;
+
+export type LiquidateEvent = TypedEvent<
+  [string, string] & { reserve: string; trader: string }
+>;
+
+export type RepayEvent = TypedEvent<
+  [string, string, BigNumber] & {
+    reserve: string;
+    trader: string;
+    amount: BigNumber;
+  }
+>;
+
+export type WithdrawEvent = TypedEvent<
+  [string, string, BigNumber] & {
+    reserve: string;
+    investor: string;
+    amount: BigNumber;
+  }
+>;
 
 export class IReserve extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -359,6 +402,8 @@ export class IReserve extends BaseContract {
 
     getUtilizationRate(overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    isActive(overrides?: CallOverrides): Promise<[boolean]>;
+
     liquidate(
       trader: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -498,6 +543,8 @@ export class IReserve extends BaseContract {
 
   getUtilizationRate(overrides?: CallOverrides): Promise<BigNumber>;
 
+  isActive(overrides?: CallOverrides): Promise<boolean>;
+
   liquidate(
     trader: string,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -629,6 +676,8 @@ export class IReserve extends BaseContract {
 
     getUtilizationRate(overrides?: CallOverrides): Promise<BigNumber>;
 
+    isActive(overrides?: CallOverrides): Promise<boolean>;
+
     liquidate(trader: string, overrides?: CallOverrides): Promise<void>;
 
     liquidityOf(
@@ -661,6 +710,15 @@ export class IReserve extends BaseContract {
   };
 
   filters: {
+    "Borrow(address,address,uint256)"(
+      reserve?: string | null,
+      trader?: string | null,
+      amount?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { reserve: string; trader: string; amount: BigNumber }
+    >;
+
     Borrow(
       reserve?: string | null,
       trader?: string | null,
@@ -668,6 +726,15 @@ export class IReserve extends BaseContract {
     ): TypedEventFilter<
       [string, string, BigNumber],
       { reserve: string; trader: string; amount: BigNumber }
+    >;
+
+    "Deposit(address,address,uint256)"(
+      reserve?: string | null,
+      investor?: string | null,
+      amount?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { reserve: string; investor: string; amount: BigNumber }
     >;
 
     Deposit(
@@ -679,6 +746,14 @@ export class IReserve extends BaseContract {
       { reserve: string; investor: string; amount: BigNumber }
     >;
 
+    "Fill(address,uint256)"(
+      reserve?: string | null,
+      amount?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { reserve: string; amount: BigNumber }
+    >;
+
     Fill(
       reserve?: string | null,
       amount?: null
@@ -687,10 +762,24 @@ export class IReserve extends BaseContract {
       { reserve: string; amount: BigNumber }
     >;
 
+    "Liquidate(address,address)"(
+      reserve?: string | null,
+      trader?: string | null
+    ): TypedEventFilter<[string, string], { reserve: string; trader: string }>;
+
     Liquidate(
       reserve?: string | null,
       trader?: string | null
     ): TypedEventFilter<[string, string], { reserve: string; trader: string }>;
+
+    "Repay(address,address,uint256)"(
+      reserve?: string | null,
+      trader?: string | null,
+      amount?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { reserve: string; trader: string; amount: BigNumber }
+    >;
 
     Repay(
       reserve?: string | null,
@@ -699,6 +788,15 @@ export class IReserve extends BaseContract {
     ): TypedEventFilter<
       [string, string, BigNumber],
       { reserve: string; trader: string; amount: BigNumber }
+    >;
+
+    "Withdraw(address,address,uint256)"(
+      reserve?: string | null,
+      investor?: string | null,
+      amount?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { reserve: string; investor: string; amount: BigNumber }
     >;
 
     Withdraw(
@@ -776,6 +874,8 @@ export class IReserve extends BaseContract {
     getTotalLiquidity(overrides?: CallOverrides): Promise<BigNumber>;
 
     getUtilizationRate(overrides?: CallOverrides): Promise<BigNumber>;
+
+    isActive(overrides?: CallOverrides): Promise<BigNumber>;
 
     liquidate(
       trader: string,
@@ -884,6 +984,8 @@ export class IReserve extends BaseContract {
     getUtilizationRate(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    isActive(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     liquidate(
       trader: string,

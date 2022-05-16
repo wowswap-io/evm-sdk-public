@@ -134,6 +134,32 @@ const _abi = [
     inputs: [
       {
         internalType: "address",
+        name: "liquidator",
+        type: "address",
+      },
+    ],
+    name: "isLiquidator",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "registerAsLiquidator",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
         name: "holder",
         type: "address",
       },
@@ -157,6 +183,19 @@ const _abi = [
       },
     ],
     name: "setAddress",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "noDebtLeverageFactor",
+        type: "uint256",
+      },
+    ],
+    name: "setNoDebtLeverageFactor",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -246,6 +285,40 @@ const _abi = [
         name: "distribution",
         type: "tuple",
       },
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "deadline",
+            type: "uint256",
+          },
+          {
+            components: [
+              {
+                internalType: "uint8",
+                name: "v",
+                type: "uint8",
+              },
+              {
+                internalType: "bytes32",
+                name: "r",
+                type: "bytes32",
+              },
+              {
+                internalType: "bytes32",
+                name: "s",
+                type: "bytes32",
+              },
+            ],
+            internalType: "struct Signature",
+            name: "signature",
+            type: "tuple",
+          },
+        ],
+        internalType: "struct IParamGovernance.VotePermission",
+        name: "votePermission",
+        type: "tuple",
+      },
     ],
     name: "voteForFeeDistribution",
     outputs: [],
@@ -269,6 +342,40 @@ const _abi = [
         name: "value",
         type: "uint256",
       },
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "deadline",
+            type: "uint256",
+          },
+          {
+            components: [
+              {
+                internalType: "uint8",
+                name: "v",
+                type: "uint8",
+              },
+              {
+                internalType: "bytes32",
+                name: "r",
+                type: "bytes32",
+              },
+              {
+                internalType: "bytes32",
+                name: "s",
+                type: "bytes32",
+              },
+            ],
+            internalType: "struct Signature",
+            name: "signature",
+            type: "tuple",
+          },
+        ],
+        internalType: "struct IParamGovernance.VotePermission",
+        name: "votePermission",
+        type: "tuple",
+      },
     ],
     name: "voteForParam",
     outputs: [],
@@ -291,6 +398,40 @@ const _abi = [
         internalType: "uint256[]",
         name: "values",
         type: "uint256[]",
+      },
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "deadline",
+            type: "uint256",
+          },
+          {
+            components: [
+              {
+                internalType: "uint8",
+                name: "v",
+                type: "uint8",
+              },
+              {
+                internalType: "bytes32",
+                name: "r",
+                type: "bytes32",
+              },
+              {
+                internalType: "bytes32",
+                name: "s",
+                type: "bytes32",
+              },
+            ],
+            internalType: "struct Signature",
+            name: "signature",
+            type: "tuple",
+          },
+        ],
+        internalType: "struct IParamGovernance.VotePermission",
+        name: "votePermission",
+        type: "tuple",
       },
     ],
     name: "voteForParams",

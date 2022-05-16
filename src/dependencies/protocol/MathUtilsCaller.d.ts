@@ -17,12 +17,13 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface MathUtilsCallerInterface extends ethers.utils.Interface {
   functions: {
     "calculateCompoundedInterest(uint256,uint256,uint256)": FunctionFragment;
     "calculateCompoundedInterestConsumption(uint256,uint256,uint256)": FunctionFragment;
+    "rootN(int256,uint64)": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -33,6 +34,10 @@ interface MathUtilsCallerInterface extends ethers.utils.Interface {
     functionFragment: "calculateCompoundedInterestConsumption",
     values: [BigNumberish, BigNumberish, BigNumberish]
   ): string;
+  encodeFunctionData(
+    functionFragment: "rootN",
+    values: [BigNumberish, BigNumberish]
+  ): string;
 
   decodeFunctionResult(
     functionFragment: "calculateCompoundedInterest",
@@ -42,6 +47,7 @@ interface MathUtilsCallerInterface extends ethers.utils.Interface {
     functionFragment: "calculateCompoundedInterestConsumption",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "rootN", data: BytesLike): Result;
 
   events: {};
 }
@@ -103,6 +109,12 @@ export class MathUtilsCaller extends BaseContract {
       currentTimestamp: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    rootN(
+      value: BigNumberish,
+      n: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
   };
 
   calculateCompoundedInterest(
@@ -119,6 +131,12 @@ export class MathUtilsCaller extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  rootN(
+    value: BigNumberish,
+    n: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
   callStatic: {
     calculateCompoundedInterest(
       rate: BigNumberish,
@@ -131,6 +149,12 @@ export class MathUtilsCaller extends BaseContract {
       rate: BigNumberish,
       lastUpdateTimestamp: BigNumberish,
       currentTimestamp: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    rootN(
+      value: BigNumberish,
+      n: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
   };
@@ -151,6 +175,12 @@ export class MathUtilsCaller extends BaseContract {
       currentTimestamp: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    rootN(
+      value: BigNumberish,
+      n: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -166,6 +196,12 @@ export class MathUtilsCaller extends BaseContract {
       lastUpdateTimestamp: BigNumberish,
       currentTimestamp: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    rootN(
+      value: BigNumberish,
+      n: BigNumberish,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };
 }

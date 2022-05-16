@@ -37,8 +37,14 @@ const _bytecode =
   "0x608060405234801561001057600080fd5b5060b18061001f6000396000f3fe608060405236601057600e601f565b005b348015601b57600080fd5b50600e5b60256031565b6031602d6033565b6058565b565b7f360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc5490565b3660008037600080366000845af43d6000803e8080156076573d6000f35b3d6000fdfea2646970667358221220519f53ca197e94388704ce712fe5a7d693667228796704e0c081fc68da2fadd464736f6c63430007040033";
 
 export class BaseUpgradeabilityProxy__factory extends ContractFactory {
-  constructor(signer?: Signer) {
-    super(_abi, _bytecode, signer);
+  constructor(
+    ...args: [signer: Signer] | ConstructorParameters<typeof ContractFactory>
+  ) {
+    if (args.length === 1) {
+      super(_abi, _bytecode, args[0]);
+    } else {
+      super(...args);
+    }
   }
 
   deploy(

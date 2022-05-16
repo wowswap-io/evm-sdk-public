@@ -16,7 +16,7 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface PairExplorerV1Interface extends ethers.utils.Interface {
   functions: {
@@ -200,7 +200,13 @@ export class PairExplorerV1 extends BaseContract {
           BigNumber,
           BigNumber,
           BigNumber,
-          BigNumber
+          BigNumber,
+          [BigNumber, BigNumber, BigNumber, BigNumber] & {
+            expirationDate: BigNumber;
+            stopLossPercentage: BigNumber;
+            takeProfitPercentage: BigNumber;
+            terminationReward: BigNumber;
+          }
         ] & {
           amount: BigNumber;
           value: BigNumber;
@@ -210,6 +216,17 @@ export class PairExplorerV1 extends BaseContract {
           rate: BigNumber;
           currentCost: BigNumber;
           liquidationCost: BigNumber;
+          terminationConditions: [
+            BigNumber,
+            BigNumber,
+            BigNumber,
+            BigNumber
+          ] & {
+            expirationDate: BigNumber;
+            stopLossPercentage: BigNumber;
+            takeProfitPercentage: BigNumber;
+            terminationReward: BigNumber;
+          };
         }
       ] & {
         position: [
@@ -220,7 +237,13 @@ export class PairExplorerV1 extends BaseContract {
           BigNumber,
           BigNumber,
           BigNumber,
-          BigNumber
+          BigNumber,
+          [BigNumber, BigNumber, BigNumber, BigNumber] & {
+            expirationDate: BigNumber;
+            stopLossPercentage: BigNumber;
+            takeProfitPercentage: BigNumber;
+            terminationReward: BigNumber;
+          }
         ] & {
           amount: BigNumber;
           value: BigNumber;
@@ -230,6 +253,17 @@ export class PairExplorerV1 extends BaseContract {
           rate: BigNumber;
           currentCost: BigNumber;
           liquidationCost: BigNumber;
+          terminationConditions: [
+            BigNumber,
+            BigNumber,
+            BigNumber,
+            BigNumber
+          ] & {
+            expirationDate: BigNumber;
+            stopLossPercentage: BigNumber;
+            takeProfitPercentage: BigNumber;
+            terminationReward: BigNumber;
+          };
         };
       }
     >;
@@ -250,7 +284,13 @@ export class PairExplorerV1 extends BaseContract {
           BigNumber,
           BigNumber,
           BigNumber,
-          BigNumber
+          BigNumber,
+          [BigNumber, BigNumber, BigNumber, BigNumber] & {
+            expirationDate: BigNumber;
+            stopLossPercentage: BigNumber;
+            takeProfitPercentage: BigNumber;
+            terminationReward: BigNumber;
+          }
         ] & {
           amount: BigNumber;
           value: BigNumber;
@@ -260,6 +300,17 @@ export class PairExplorerV1 extends BaseContract {
           rate: BigNumber;
           currentCost: BigNumber;
           liquidationCost: BigNumber;
+          terminationConditions: [
+            BigNumber,
+            BigNumber,
+            BigNumber,
+            BigNumber
+          ] & {
+            expirationDate: BigNumber;
+            stopLossPercentage: BigNumber;
+            takeProfitPercentage: BigNumber;
+            terminationReward: BigNumber;
+          };
         }
       ] & {
         position: [
@@ -270,7 +321,13 @@ export class PairExplorerV1 extends BaseContract {
           BigNumber,
           BigNumber,
           BigNumber,
-          BigNumber
+          BigNumber,
+          [BigNumber, BigNumber, BigNumber, BigNumber] & {
+            expirationDate: BigNumber;
+            stopLossPercentage: BigNumber;
+            takeProfitPercentage: BigNumber;
+            terminationReward: BigNumber;
+          }
         ] & {
           amount: BigNumber;
           value: BigNumber;
@@ -280,6 +337,17 @@ export class PairExplorerV1 extends BaseContract {
           rate: BigNumber;
           currentCost: BigNumber;
           liquidationCost: BigNumber;
+          terminationConditions: [
+            BigNumber,
+            BigNumber,
+            BigNumber,
+            BigNumber
+          ] & {
+            expirationDate: BigNumber;
+            stopLossPercentage: BigNumber;
+            takeProfitPercentage: BigNumber;
+            terminationReward: BigNumber;
+          };
         };
       }
     >;
@@ -359,7 +427,13 @@ export class PairExplorerV1 extends BaseContract {
       BigNumber,
       BigNumber,
       BigNumber,
-      BigNumber
+      BigNumber,
+      [BigNumber, BigNumber, BigNumber, BigNumber] & {
+        expirationDate: BigNumber;
+        stopLossPercentage: BigNumber;
+        takeProfitPercentage: BigNumber;
+        terminationReward: BigNumber;
+      }
     ] & {
       amount: BigNumber;
       value: BigNumber;
@@ -369,6 +443,12 @@ export class PairExplorerV1 extends BaseContract {
       rate: BigNumber;
       currentCost: BigNumber;
       liquidationCost: BigNumber;
+      terminationConditions: [BigNumber, BigNumber, BigNumber, BigNumber] & {
+        expirationDate: BigNumber;
+        stopLossPercentage: BigNumber;
+        takeProfitPercentage: BigNumber;
+        terminationReward: BigNumber;
+      };
     }
   >;
 
@@ -387,7 +467,13 @@ export class PairExplorerV1 extends BaseContract {
       BigNumber,
       BigNumber,
       BigNumber,
-      BigNumber
+      BigNumber,
+      [BigNumber, BigNumber, BigNumber, BigNumber] & {
+        expirationDate: BigNumber;
+        stopLossPercentage: BigNumber;
+        takeProfitPercentage: BigNumber;
+        terminationReward: BigNumber;
+      }
     ] & {
       amount: BigNumber;
       value: BigNumber;
@@ -397,6 +483,12 @@ export class PairExplorerV1 extends BaseContract {
       rate: BigNumber;
       currentCost: BigNumber;
       liquidationCost: BigNumber;
+      terminationConditions: [BigNumber, BigNumber, BigNumber, BigNumber] & {
+        expirationDate: BigNumber;
+        stopLossPercentage: BigNumber;
+        takeProfitPercentage: BigNumber;
+        terminationReward: BigNumber;
+      };
     }
   >;
 
@@ -475,7 +567,13 @@ export class PairExplorerV1 extends BaseContract {
         BigNumber,
         BigNumber,
         BigNumber,
-        BigNumber
+        BigNumber,
+        [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        }
       ] & {
         amount: BigNumber;
         value: BigNumber;
@@ -485,6 +583,12 @@ export class PairExplorerV1 extends BaseContract {
         rate: BigNumber;
         currentCost: BigNumber;
         liquidationCost: BigNumber;
+        terminationConditions: [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        };
       }
     >;
 
@@ -503,7 +607,13 @@ export class PairExplorerV1 extends BaseContract {
         BigNumber,
         BigNumber,
         BigNumber,
-        BigNumber
+        BigNumber,
+        [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        }
       ] & {
         amount: BigNumber;
         value: BigNumber;
@@ -513,6 +623,12 @@ export class PairExplorerV1 extends BaseContract {
         rate: BigNumber;
         currentCost: BigNumber;
         liquidationCost: BigNumber;
+        terminationConditions: [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        };
       }
     >;
   };

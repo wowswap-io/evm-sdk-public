@@ -268,6 +268,33 @@ const _abi = [
             name: "liquidationCost",
             type: "uint256",
           },
+          {
+            components: [
+              {
+                internalType: "uint256",
+                name: "expirationDate",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "stopLossPercentage",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "takeProfitPercentage",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "terminationReward",
+                type: "uint256",
+              },
+            ],
+            internalType: "struct TerminationConditions",
+            name: "terminationConditions",
+            type: "tuple",
+          },
         ],
         internalType: "struct Position",
         name: "position",
@@ -343,6 +370,33 @@ const _abi = [
             internalType: "uint256",
             name: "liquidationCost",
             type: "uint256",
+          },
+          {
+            components: [
+              {
+                internalType: "uint256",
+                name: "expirationDate",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "stopLossPercentage",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "takeProfitPercentage",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "terminationReward",
+                type: "uint256",
+              },
+            ],
+            internalType: "struct TerminationConditions",
+            name: "terminationConditions",
+            type: "tuple",
           },
         ],
         internalType: "struct Position",

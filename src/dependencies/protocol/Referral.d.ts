@@ -17,7 +17,7 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface ReferralInterface extends ethers.utils.Interface {
   functions: {
@@ -47,6 +47,8 @@ interface ReferralInterface extends ethers.utils.Interface {
     "setReferralAdmin(address,address)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
     "treasurer()": FunctionFragment;
+    "withdrawIncentivizedToken(address,address)": FunctionFragment;
+    "withdrawIncentivizedTokens(address[],address)": FunctionFragment;
     "wow()": FunctionFragment;
     "xwow()": FunctionFragment;
   };
@@ -125,6 +127,14 @@ interface ReferralInterface extends ethers.utils.Interface {
     values: [string]
   ): string;
   encodeFunctionData(functionFragment: "treasurer", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "withdrawIncentivizedToken",
+    values: [string, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "withdrawIncentivizedTokens",
+    values: [string[], string]
+  ): string;
   encodeFunctionData(functionFragment: "wow", values?: undefined): string;
   encodeFunctionData(functionFragment: "xwow", values?: undefined): string;
 
@@ -199,6 +209,14 @@ interface ReferralInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "treasurer", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "withdrawIncentivizedToken",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "withdrawIncentivizedTokens",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "wow", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "xwow", data: BytesLike): Result;
 
@@ -208,6 +226,10 @@ interface ReferralInterface extends ethers.utils.Interface {
 
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
 }
+
+export type OwnershipTransferredEvent = TypedEvent<
+  [string, string] & { previousOwner: string; newOwner: string }
+>;
 
 export class Referral extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -405,6 +427,18 @@ export class Referral extends BaseContract {
 
     treasurer(overrides?: CallOverrides): Promise<[string]>;
 
+    withdrawIncentivizedToken(
+      token: string,
+      to: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    withdrawIncentivizedTokens(
+      tokens: string[],
+      to: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     wow(overrides?: CallOverrides): Promise<[string]>;
 
     xwow(overrides?: CallOverrides): Promise<[string]>;
@@ -546,6 +580,18 @@ export class Referral extends BaseContract {
 
   treasurer(overrides?: CallOverrides): Promise<string>;
 
+  withdrawIncentivizedToken(
+    token: string,
+    to: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  withdrawIncentivizedTokens(
+    tokens: string[],
+    to: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   wow(overrides?: CallOverrides): Promise<string>;
 
   xwow(overrides?: CallOverrides): Promise<string>;
@@ -674,12 +720,32 @@ export class Referral extends BaseContract {
 
     treasurer(overrides?: CallOverrides): Promise<string>;
 
+    withdrawIncentivizedToken(
+      token: string,
+      to: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    withdrawIncentivizedTokens(
+      tokens: string[],
+      to: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     wow(overrides?: CallOverrides): Promise<string>;
 
     xwow(overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {
+    "OwnershipTransferred(address,address)"(
+      previousOwner?: string | null,
+      newOwner?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { previousOwner: string; newOwner: string }
+    >;
+
     OwnershipTransferred(
       previousOwner?: string | null,
       newOwner?: string | null
@@ -803,6 +869,18 @@ export class Referral extends BaseContract {
     ): Promise<BigNumber>;
 
     treasurer(overrides?: CallOverrides): Promise<BigNumber>;
+
+    withdrawIncentivizedToken(
+      token: string,
+      to: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    withdrawIncentivizedTokens(
+      tokens: string[],
+      to: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     wow(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -935,6 +1013,18 @@ export class Referral extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     treasurer(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    withdrawIncentivizedToken(
+      token: string,
+      to: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    withdrawIncentivizedTokens(
+      tokens: string[],
+      to: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
     wow(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

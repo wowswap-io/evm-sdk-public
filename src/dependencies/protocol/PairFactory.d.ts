@@ -17,7 +17,7 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface PairFactoryInterface extends ethers.utils.Interface {
   functions: {
@@ -30,14 +30,14 @@ interface PairFactoryInterface extends ethers.utils.Interface {
     "getOrCreateRoutableShortingPair(address,address,address)": FunctionFragment;
     "getOrCreateShortingPair(address,address)": FunctionFragment;
     "getPair(address,address)": FunctionFragment;
-    "getPairDeployer()": FunctionFragment;
     "getRoutablePair(address,address,address)": FunctionFragment;
     "getRoutableShortingPair(address,address,address)": FunctionFragment;
     "getShortingPair(address,address)": FunctionFragment;
-    "getShortingPairDeployer()": FunctionFragment;
-    "initialize(address,address,address,address,address)": FunctionFragment;
+    "initialize(address,address,address,address,address,address)": FunctionFragment;
     "isPair(address)": FunctionFragment;
     "isRegisteredShortable(address)": FunctionFragment;
+    "m_pairImplementation()": FunctionFragment;
+    "m_shortingPairImplementation()": FunctionFragment;
     "owner()": FunctionFragment;
     "registerProxyLendable(address)": FunctionFragment;
     "registerProxyLendables(address[])": FunctionFragment;
@@ -46,10 +46,9 @@ interface PairFactoryInterface extends ethers.utils.Interface {
     "registerTradable(address)": FunctionFragment;
     "registerTradables(address[])": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
-    "setPairDeployer(address)": FunctionFragment;
-    "setShortingPairDeployer(address)": FunctionFragment;
+    "setPairImplementation(address)": FunctionFragment;
+    "setShortingPairImplementation(address)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
-    "upgrade()": FunctionFragment;
   };
 
   encodeFunctionData(functionFragment: "REVISION", values?: undefined): string;
@@ -86,10 +85,6 @@ interface PairFactoryInterface extends ethers.utils.Interface {
     values: [string, string]
   ): string;
   encodeFunctionData(
-    functionFragment: "getPairDeployer",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "getRoutablePair",
     values: [string, string, string]
   ): string;
@@ -102,17 +97,21 @@ interface PairFactoryInterface extends ethers.utils.Interface {
     values: [string, string]
   ): string;
   encodeFunctionData(
-    functionFragment: "getShortingPairDeployer",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "initialize",
-    values: [string, string, string, string, string]
+    values: [string, string, string, string, string, string]
   ): string;
   encodeFunctionData(functionFragment: "isPair", values: [string]): string;
   encodeFunctionData(
     functionFragment: "isRegisteredShortable",
     values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "m_pairImplementation",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "m_shortingPairImplementation",
+    values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
@@ -144,18 +143,17 @@ interface PairFactoryInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "setPairDeployer",
+    functionFragment: "setPairImplementation",
     values: [string]
   ): string;
   encodeFunctionData(
-    functionFragment: "setShortingPairDeployer",
+    functionFragment: "setShortingPairImplementation",
     values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "transferOwnership",
     values: [string]
   ): string;
-  encodeFunctionData(functionFragment: "upgrade", values?: undefined): string;
 
   decodeFunctionResult(functionFragment: "REVISION", data: BytesLike): Result;
   decodeFunctionResult(
@@ -188,10 +186,6 @@ interface PairFactoryInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "getPair", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "getPairDeployer",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "getRoutablePair",
     data: BytesLike
   ): Result;
@@ -203,14 +197,18 @@ interface PairFactoryInterface extends ethers.utils.Interface {
     functionFragment: "getShortingPair",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "getShortingPairDeployer",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "isPair", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "isRegisteredShortable",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "m_pairImplementation",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "m_shortingPairImplementation",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
@@ -243,18 +241,17 @@ interface PairFactoryInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setPairDeployer",
+    functionFragment: "setPairImplementation",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setShortingPairDeployer",
+    functionFragment: "setShortingPairImplementation",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "transferOwnership",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "upgrade", data: BytesLike): Result;
 
   events: {
     "OwnershipTransferred(address,address)": EventFragment;
@@ -262,6 +259,10 @@ interface PairFactoryInterface extends ethers.utils.Interface {
 
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
 }
+
+export type OwnershipTransferredEvent = TypedEvent<
+  [string, string] & { previousOwner: string; newOwner: string }
+>;
 
 export class PairFactory extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -347,8 +348,6 @@ export class PairFactory extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
-    getPairDeployer(overrides?: CallOverrides): Promise<[string]>;
-
     getRoutablePair(
       lendable: string,
       proxyLendable: string,
@@ -369,12 +368,11 @@ export class PairFactory extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
-    getShortingPairDeployer(overrides?: CallOverrides): Promise<[string]>;
-
     initialize(
       reserveFactory: string,
       paramProviderFactory: string,
-      pairDeployer: string,
+      pairImplementation: string,
+      shortingPairImplementation: string,
       treasurer: string,
       wow: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -386,6 +384,10 @@ export class PairFactory extends BaseContract {
       token: string,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
+
+    m_pairImplementation(overrides?: CallOverrides): Promise<[string]>;
+
+    m_shortingPairImplementation(overrides?: CallOverrides): Promise<[string]>;
 
     owner(overrides?: CallOverrides): Promise<[string]>;
 
@@ -423,22 +425,18 @@ export class PairFactory extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setPairDeployer(
-      pairDeployer: string,
+    setPairImplementation(
+      pairImplementation: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setShortingPairDeployer(
-      shortingPairDeployer: string,
+    setShortingPairImplementation(
+      shortingPairImplementation: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     transferOwnership(
       newOwner: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    upgrade(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
@@ -483,8 +481,6 @@ export class PairFactory extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string>;
 
-  getPairDeployer(overrides?: CallOverrides): Promise<string>;
-
   getRoutablePair(
     lendable: string,
     proxyLendable: string,
@@ -505,12 +501,11 @@ export class PairFactory extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string>;
 
-  getShortingPairDeployer(overrides?: CallOverrides): Promise<string>;
-
   initialize(
     reserveFactory: string,
     paramProviderFactory: string,
-    pairDeployer: string,
+    pairImplementation: string,
+    shortingPairImplementation: string,
     treasurer: string,
     wow: string,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -522,6 +517,10 @@ export class PairFactory extends BaseContract {
     token: string,
     overrides?: CallOverrides
   ): Promise<boolean>;
+
+  m_pairImplementation(overrides?: CallOverrides): Promise<string>;
+
+  m_shortingPairImplementation(overrides?: CallOverrides): Promise<string>;
 
   owner(overrides?: CallOverrides): Promise<string>;
 
@@ -559,22 +558,18 @@ export class PairFactory extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setPairDeployer(
-    pairDeployer: string,
+  setPairImplementation(
+    pairImplementation: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setShortingPairDeployer(
-    shortingPairDeployer: string,
+  setShortingPairImplementation(
+    shortingPairImplementation: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   transferOwnership(
     newOwner: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  upgrade(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -619,8 +614,6 @@ export class PairFactory extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
-    getPairDeployer(overrides?: CallOverrides): Promise<string>;
-
     getRoutablePair(
       lendable: string,
       proxyLendable: string,
@@ -641,12 +634,11 @@ export class PairFactory extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
-    getShortingPairDeployer(overrides?: CallOverrides): Promise<string>;
-
     initialize(
       reserveFactory: string,
       paramProviderFactory: string,
-      pairDeployer: string,
+      pairImplementation: string,
+      shortingPairImplementation: string,
       treasurer: string,
       wow: string,
       overrides?: CallOverrides
@@ -658,6 +650,10 @@ export class PairFactory extends BaseContract {
       token: string,
       overrides?: CallOverrides
     ): Promise<boolean>;
+
+    m_pairImplementation(overrides?: CallOverrides): Promise<string>;
+
+    m_shortingPairImplementation(overrides?: CallOverrides): Promise<string>;
 
     owner(overrides?: CallOverrides): Promise<string>;
 
@@ -687,13 +683,13 @@ export class PairFactory extends BaseContract {
 
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
 
-    setPairDeployer(
-      pairDeployer: string,
+    setPairImplementation(
+      pairImplementation: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    setShortingPairDeployer(
-      shortingPairDeployer: string,
+    setShortingPairImplementation(
+      shortingPairImplementation: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -701,11 +697,17 @@ export class PairFactory extends BaseContract {
       newOwner: string,
       overrides?: CallOverrides
     ): Promise<void>;
-
-    upgrade(overrides?: CallOverrides): Promise<void>;
   };
 
   filters: {
+    "OwnershipTransferred(address,address)"(
+      previousOwner?: string | null,
+      newOwner?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { previousOwner: string; newOwner: string }
+    >;
+
     OwnershipTransferred(
       previousOwner?: string | null,
       newOwner?: string | null
@@ -756,8 +758,6 @@ export class PairFactory extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    getPairDeployer(overrides?: CallOverrides): Promise<BigNumber>;
-
     getRoutablePair(
       lendable: string,
       proxyLendable: string,
@@ -778,12 +778,11 @@ export class PairFactory extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    getShortingPairDeployer(overrides?: CallOverrides): Promise<BigNumber>;
-
     initialize(
       reserveFactory: string,
       paramProviderFactory: string,
-      pairDeployer: string,
+      pairImplementation: string,
+      shortingPairImplementation: string,
       treasurer: string,
       wow: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -795,6 +794,10 @@ export class PairFactory extends BaseContract {
       token: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    m_pairImplementation(overrides?: CallOverrides): Promise<BigNumber>;
+
+    m_shortingPairImplementation(overrides?: CallOverrides): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -832,22 +835,18 @@ export class PairFactory extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    setPairDeployer(
-      pairDeployer: string,
+    setPairImplementation(
+      pairImplementation: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    setShortingPairDeployer(
-      shortingPairDeployer: string,
+    setShortingPairImplementation(
+      shortingPairImplementation: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     transferOwnership(
       newOwner: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    upgrade(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
@@ -895,8 +894,6 @@ export class PairFactory extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    getPairDeployer(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     getRoutablePair(
       lendable: string,
       proxyLendable: string,
@@ -917,14 +914,11 @@ export class PairFactory extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    getShortingPairDeployer(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     initialize(
       reserveFactory: string,
       paramProviderFactory: string,
-      pairDeployer: string,
+      pairImplementation: string,
+      shortingPairImplementation: string,
       treasurer: string,
       wow: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -937,6 +931,14 @@ export class PairFactory extends BaseContract {
 
     isRegisteredShortable(
       token: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    m_pairImplementation(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    m_shortingPairImplementation(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -976,22 +978,18 @@ export class PairFactory extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    setPairDeployer(
-      pairDeployer: string,
+    setPairImplementation(
+      pairImplementation: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    setShortingPairDeployer(
-      shortingPairDeployer: string,
+    setShortingPairImplementation(
+      shortingPairImplementation: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     transferOwnership(
       newOwner: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    upgrade(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };

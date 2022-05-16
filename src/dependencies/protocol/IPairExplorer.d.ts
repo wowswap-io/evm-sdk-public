@@ -11,12 +11,13 @@ import {
   PopulatedTransaction,
   BaseContract,
   ContractTransaction,
+  Overrides,
   CallOverrides,
 } from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface IPairExplorerInterface extends ethers.utils.Interface {
   functions: {
@@ -184,30 +185,16 @@ export class IPairExplorer extends BaseContract {
       tradable: string,
       trader: string,
       amountIn: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber] & {
-        amountOut: BigNumber;
-        profit: BigNumber;
-        debtPayable: BigNumber;
-        protocolFee: BigNumber;
-      }
-    >;
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     calculateOpenPosition(
       lendable: string,
       tradable: string,
       amount: BigNumberish,
       leverageFactor: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber] & {
-        maxAmountIn: BigNumber;
-        borrowAmount: BigNumber;
-        borrowRate: BigNumber;
-        liquidationCost: BigNumber;
-      }
-    >;
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     calculateOpenProxyPosition(
       lendable: string,
@@ -215,15 +202,8 @@ export class IPairExplorer extends BaseContract {
       tradable: string,
       amount: BigNumberish,
       leverageFactor: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber] & {
-        maxAmountIn: BigNumber;
-        borrowAmount: BigNumber;
-        borrowRate: BigNumber;
-        liquidationCost: BigNumber;
-      }
-    >;
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     calculateOpenProxyShortPosition(
       lendable: string,
@@ -231,30 +211,16 @@ export class IPairExplorer extends BaseContract {
       shortable: string,
       amount: BigNumberish,
       leverageFactor: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber] & {
-        maxAmountIn: BigNumber;
-        borrowAmount: BigNumber;
-        borrowRate: BigNumber;
-        liquidationCost: BigNumber;
-      }
-    >;
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     calculateOpenShortPosition(
       lendable: string,
       shortable: string,
       amount: BigNumberish,
       leverageFactor: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber] & {
-        maxAmountIn: BigNumber;
-        borrowAmount: BigNumber;
-        borrowRate: BigNumber;
-        liquidationCost: BigNumber;
-      }
-    >;
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     calculateProxyBalance(
       lendable: string,
@@ -262,15 +228,8 @@ export class IPairExplorer extends BaseContract {
       tradable: string,
       trader: string,
       amountIn: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber] & {
-        amountOut: BigNumber;
-        profit: BigNumber;
-        debtPayable: BigNumber;
-        protocolFee: BigNumber;
-      }
-    >;
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     calculateProxyShortBalance(
       lendable: string,
@@ -278,228 +237,46 @@ export class IPairExplorer extends BaseContract {
       shortable: string,
       trader: string,
       amountIn: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber] & {
-        amountOut: BigNumber;
-        profit: BigNumber;
-        debtPayable: BigNumber;
-        protocolFee: BigNumber;
-      }
-    >;
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     calculateShortBalance(
       lendable: string,
       shortable: string,
       trader: string,
       amountIn: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber] & {
-        amountOut: BigNumber;
-        profit: BigNumber;
-        debtPayable: BigNumber;
-        protocolFee: BigNumber;
-      }
-    >;
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     getPosition(
       trader: string,
       lendable: string,
       tradable: string,
-      overrides?: CallOverrides
-    ): Promise<
-      [
-        [
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber
-        ] & {
-          amount: BigNumber;
-          value: BigNumber;
-          selfValue: BigNumber;
-          principalDebt: BigNumber;
-          currentDebt: BigNumber;
-          rate: BigNumber;
-          currentCost: BigNumber;
-          liquidationCost: BigNumber;
-        }
-      ] & {
-        position: [
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber
-        ] & {
-          amount: BigNumber;
-          value: BigNumber;
-          selfValue: BigNumber;
-          principalDebt: BigNumber;
-          currentDebt: BigNumber;
-          rate: BigNumber;
-          currentCost: BigNumber;
-          liquidationCost: BigNumber;
-        };
-      }
-    >;
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     getProxyPosition(
       trader: string,
       lendable: string,
       proxyLendable: string,
       tradable: string,
-      overrides?: CallOverrides
-    ): Promise<
-      [
-        [
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber
-        ] & {
-          amount: BigNumber;
-          value: BigNumber;
-          selfValue: BigNumber;
-          principalDebt: BigNumber;
-          currentDebt: BigNumber;
-          rate: BigNumber;
-          currentCost: BigNumber;
-          liquidationCost: BigNumber;
-        }
-      ] & {
-        position: [
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber
-        ] & {
-          amount: BigNumber;
-          value: BigNumber;
-          selfValue: BigNumber;
-          principalDebt: BigNumber;
-          currentDebt: BigNumber;
-          rate: BigNumber;
-          currentCost: BigNumber;
-          liquidationCost: BigNumber;
-        };
-      }
-    >;
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     getProxyShortPosition(
       trader: string,
       lendable: string,
       proxyLendable: string,
       shortable: string,
-      overrides?: CallOverrides
-    ): Promise<
-      [
-        [
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber
-        ] & {
-          amount: BigNumber;
-          value: BigNumber;
-          selfValue: BigNumber;
-          principalDebt: BigNumber;
-          currentDebt: BigNumber;
-          rate: BigNumber;
-          currentCost: BigNumber;
-          liquidationCost: BigNumber;
-        }
-      ] & {
-        position: [
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber
-        ] & {
-          amount: BigNumber;
-          value: BigNumber;
-          selfValue: BigNumber;
-          principalDebt: BigNumber;
-          currentDebt: BigNumber;
-          rate: BigNumber;
-          currentCost: BigNumber;
-          liquidationCost: BigNumber;
-        };
-      }
-    >;
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     getShortPosition(
       trader: string,
       lendable: string,
       shortable: string,
-      overrides?: CallOverrides
-    ): Promise<
-      [
-        [
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber
-        ] & {
-          amount: BigNumber;
-          value: BigNumber;
-          selfValue: BigNumber;
-          principalDebt: BigNumber;
-          currentDebt: BigNumber;
-          rate: BigNumber;
-          currentCost: BigNumber;
-          liquidationCost: BigNumber;
-        }
-      ] & {
-        position: [
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber,
-          BigNumber
-        ] & {
-          amount: BigNumber;
-          value: BigNumber;
-          selfValue: BigNumber;
-          principalDebt: BigNumber;
-          currentDebt: BigNumber;
-          rate: BigNumber;
-          currentCost: BigNumber;
-          liquidationCost: BigNumber;
-        };
-      }
-    >;
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
   };
 
   calculateBalance(
@@ -507,30 +284,16 @@ export class IPairExplorer extends BaseContract {
     tradable: string,
     trader: string,
     amountIn: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<
-    [BigNumber, BigNumber, BigNumber, BigNumber] & {
-      amountOut: BigNumber;
-      profit: BigNumber;
-      debtPayable: BigNumber;
-      protocolFee: BigNumber;
-    }
-  >;
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   calculateOpenPosition(
     lendable: string,
     tradable: string,
     amount: BigNumberish,
     leverageFactor: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<
-    [BigNumber, BigNumber, BigNumber, BigNumber] & {
-      maxAmountIn: BigNumber;
-      borrowAmount: BigNumber;
-      borrowRate: BigNumber;
-      liquidationCost: BigNumber;
-    }
-  >;
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   calculateOpenProxyPosition(
     lendable: string,
@@ -538,15 +301,8 @@ export class IPairExplorer extends BaseContract {
     tradable: string,
     amount: BigNumberish,
     leverageFactor: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<
-    [BigNumber, BigNumber, BigNumber, BigNumber] & {
-      maxAmountIn: BigNumber;
-      borrowAmount: BigNumber;
-      borrowRate: BigNumber;
-      liquidationCost: BigNumber;
-    }
-  >;
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   calculateOpenProxyShortPosition(
     lendable: string,
@@ -554,30 +310,16 @@ export class IPairExplorer extends BaseContract {
     shortable: string,
     amount: BigNumberish,
     leverageFactor: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<
-    [BigNumber, BigNumber, BigNumber, BigNumber] & {
-      maxAmountIn: BigNumber;
-      borrowAmount: BigNumber;
-      borrowRate: BigNumber;
-      liquidationCost: BigNumber;
-    }
-  >;
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   calculateOpenShortPosition(
     lendable: string,
     shortable: string,
     amount: BigNumberish,
     leverageFactor: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<
-    [BigNumber, BigNumber, BigNumber, BigNumber] & {
-      maxAmountIn: BigNumber;
-      borrowAmount: BigNumber;
-      borrowRate: BigNumber;
-      liquidationCost: BigNumber;
-    }
-  >;
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   calculateProxyBalance(
     lendable: string,
@@ -585,15 +327,8 @@ export class IPairExplorer extends BaseContract {
     tradable: string,
     trader: string,
     amountIn: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<
-    [BigNumber, BigNumber, BigNumber, BigNumber] & {
-      amountOut: BigNumber;
-      profit: BigNumber;
-      debtPayable: BigNumber;
-      protocolFee: BigNumber;
-    }
-  >;
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   calculateProxyShortBalance(
     lendable: string,
@@ -601,140 +336,46 @@ export class IPairExplorer extends BaseContract {
     shortable: string,
     trader: string,
     amountIn: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<
-    [BigNumber, BigNumber, BigNumber, BigNumber] & {
-      amountOut: BigNumber;
-      profit: BigNumber;
-      debtPayable: BigNumber;
-      protocolFee: BigNumber;
-    }
-  >;
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   calculateShortBalance(
     lendable: string,
     shortable: string,
     trader: string,
     amountIn: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<
-    [BigNumber, BigNumber, BigNumber, BigNumber] & {
-      amountOut: BigNumber;
-      profit: BigNumber;
-      debtPayable: BigNumber;
-      protocolFee: BigNumber;
-    }
-  >;
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   getPosition(
     trader: string,
     lendable: string,
     tradable: string,
-    overrides?: CallOverrides
-  ): Promise<
-    [
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber
-    ] & {
-      amount: BigNumber;
-      value: BigNumber;
-      selfValue: BigNumber;
-      principalDebt: BigNumber;
-      currentDebt: BigNumber;
-      rate: BigNumber;
-      currentCost: BigNumber;
-      liquidationCost: BigNumber;
-    }
-  >;
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   getProxyPosition(
     trader: string,
     lendable: string,
     proxyLendable: string,
     tradable: string,
-    overrides?: CallOverrides
-  ): Promise<
-    [
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber
-    ] & {
-      amount: BigNumber;
-      value: BigNumber;
-      selfValue: BigNumber;
-      principalDebt: BigNumber;
-      currentDebt: BigNumber;
-      rate: BigNumber;
-      currentCost: BigNumber;
-      liquidationCost: BigNumber;
-    }
-  >;
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   getProxyShortPosition(
     trader: string,
     lendable: string,
     proxyLendable: string,
     shortable: string,
-    overrides?: CallOverrides
-  ): Promise<
-    [
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber
-    ] & {
-      amount: BigNumber;
-      value: BigNumber;
-      selfValue: BigNumber;
-      principalDebt: BigNumber;
-      currentDebt: BigNumber;
-      rate: BigNumber;
-      currentCost: BigNumber;
-      liquidationCost: BigNumber;
-    }
-  >;
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   getShortPosition(
     trader: string,
     lendable: string,
     shortable: string,
-    overrides?: CallOverrides
-  ): Promise<
-    [
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber
-    ] & {
-      amount: BigNumber;
-      value: BigNumber;
-      selfValue: BigNumber;
-      principalDebt: BigNumber;
-      currentDebt: BigNumber;
-      rate: BigNumber;
-      currentCost: BigNumber;
-      liquidationCost: BigNumber;
-    }
-  >;
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   callStatic: {
     calculateBalance(
@@ -759,11 +400,28 @@ export class IPairExplorer extends BaseContract {
       leverageFactor: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber] & {
+      [
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        }
+      ] & {
         maxAmountIn: BigNumber;
         borrowAmount: BigNumber;
         borrowRate: BigNumber;
         liquidationCost: BigNumber;
+        terminationConditions: [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        };
       }
     >;
 
@@ -775,11 +433,28 @@ export class IPairExplorer extends BaseContract {
       leverageFactor: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber] & {
+      [
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        }
+      ] & {
         maxAmountIn: BigNumber;
         borrowAmount: BigNumber;
         borrowRate: BigNumber;
         liquidationCost: BigNumber;
+        terminationConditions: [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        };
       }
     >;
 
@@ -791,11 +466,28 @@ export class IPairExplorer extends BaseContract {
       leverageFactor: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber] & {
+      [
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        }
+      ] & {
         maxAmountIn: BigNumber;
         borrowAmount: BigNumber;
         borrowRate: BigNumber;
         liquidationCost: BigNumber;
+        terminationConditions: [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        };
       }
     >;
 
@@ -806,11 +498,28 @@ export class IPairExplorer extends BaseContract {
       leverageFactor: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber] & {
+      [
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        }
+      ] & {
         maxAmountIn: BigNumber;
         borrowAmount: BigNumber;
         borrowRate: BigNumber;
         liquidationCost: BigNumber;
+        terminationConditions: [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        };
       }
     >;
 
@@ -875,7 +584,13 @@ export class IPairExplorer extends BaseContract {
         BigNumber,
         BigNumber,
         BigNumber,
-        BigNumber
+        BigNumber,
+        [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        }
       ] & {
         amount: BigNumber;
         value: BigNumber;
@@ -885,6 +600,12 @@ export class IPairExplorer extends BaseContract {
         rate: BigNumber;
         currentCost: BigNumber;
         liquidationCost: BigNumber;
+        terminationConditions: [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        };
       }
     >;
 
@@ -903,7 +624,13 @@ export class IPairExplorer extends BaseContract {
         BigNumber,
         BigNumber,
         BigNumber,
-        BigNumber
+        BigNumber,
+        [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        }
       ] & {
         amount: BigNumber;
         value: BigNumber;
@@ -913,6 +640,12 @@ export class IPairExplorer extends BaseContract {
         rate: BigNumber;
         currentCost: BigNumber;
         liquidationCost: BigNumber;
+        terminationConditions: [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        };
       }
     >;
 
@@ -931,7 +664,13 @@ export class IPairExplorer extends BaseContract {
         BigNumber,
         BigNumber,
         BigNumber,
-        BigNumber
+        BigNumber,
+        [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        }
       ] & {
         amount: BigNumber;
         value: BigNumber;
@@ -941,6 +680,12 @@ export class IPairExplorer extends BaseContract {
         rate: BigNumber;
         currentCost: BigNumber;
         liquidationCost: BigNumber;
+        terminationConditions: [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        };
       }
     >;
 
@@ -958,7 +703,13 @@ export class IPairExplorer extends BaseContract {
         BigNumber,
         BigNumber,
         BigNumber,
-        BigNumber
+        BigNumber,
+        [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        }
       ] & {
         amount: BigNumber;
         value: BigNumber;
@@ -968,6 +719,12 @@ export class IPairExplorer extends BaseContract {
         rate: BigNumber;
         currentCost: BigNumber;
         liquidationCost: BigNumber;
+        terminationConditions: [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        };
       }
     >;
   };
@@ -980,7 +737,7 @@ export class IPairExplorer extends BaseContract {
       tradable: string,
       trader: string,
       amountIn: BigNumberish,
-      overrides?: CallOverrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     calculateOpenPosition(
@@ -988,7 +745,7 @@ export class IPairExplorer extends BaseContract {
       tradable: string,
       amount: BigNumberish,
       leverageFactor: BigNumberish,
-      overrides?: CallOverrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     calculateOpenProxyPosition(
@@ -997,7 +754,7 @@ export class IPairExplorer extends BaseContract {
       tradable: string,
       amount: BigNumberish,
       leverageFactor: BigNumberish,
-      overrides?: CallOverrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     calculateOpenProxyShortPosition(
@@ -1006,7 +763,7 @@ export class IPairExplorer extends BaseContract {
       shortable: string,
       amount: BigNumberish,
       leverageFactor: BigNumberish,
-      overrides?: CallOverrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     calculateOpenShortPosition(
@@ -1014,7 +771,7 @@ export class IPairExplorer extends BaseContract {
       shortable: string,
       amount: BigNumberish,
       leverageFactor: BigNumberish,
-      overrides?: CallOverrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     calculateProxyBalance(
@@ -1023,7 +780,7 @@ export class IPairExplorer extends BaseContract {
       tradable: string,
       trader: string,
       amountIn: BigNumberish,
-      overrides?: CallOverrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     calculateProxyShortBalance(
@@ -1032,7 +789,7 @@ export class IPairExplorer extends BaseContract {
       shortable: string,
       trader: string,
       amountIn: BigNumberish,
-      overrides?: CallOverrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     calculateShortBalance(
@@ -1040,14 +797,14 @@ export class IPairExplorer extends BaseContract {
       shortable: string,
       trader: string,
       amountIn: BigNumberish,
-      overrides?: CallOverrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     getPosition(
       trader: string,
       lendable: string,
       tradable: string,
-      overrides?: CallOverrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     getProxyPosition(
@@ -1055,7 +812,7 @@ export class IPairExplorer extends BaseContract {
       lendable: string,
       proxyLendable: string,
       tradable: string,
-      overrides?: CallOverrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     getProxyShortPosition(
@@ -1063,14 +820,14 @@ export class IPairExplorer extends BaseContract {
       lendable: string,
       proxyLendable: string,
       shortable: string,
-      overrides?: CallOverrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     getShortPosition(
       trader: string,
       lendable: string,
       shortable: string,
-      overrides?: CallOverrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
 
@@ -1080,7 +837,7 @@ export class IPairExplorer extends BaseContract {
       tradable: string,
       trader: string,
       amountIn: BigNumberish,
-      overrides?: CallOverrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     calculateOpenPosition(
@@ -1088,7 +845,7 @@ export class IPairExplorer extends BaseContract {
       tradable: string,
       amount: BigNumberish,
       leverageFactor: BigNumberish,
-      overrides?: CallOverrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     calculateOpenProxyPosition(
@@ -1097,7 +854,7 @@ export class IPairExplorer extends BaseContract {
       tradable: string,
       amount: BigNumberish,
       leverageFactor: BigNumberish,
-      overrides?: CallOverrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     calculateOpenProxyShortPosition(
@@ -1106,7 +863,7 @@ export class IPairExplorer extends BaseContract {
       shortable: string,
       amount: BigNumberish,
       leverageFactor: BigNumberish,
-      overrides?: CallOverrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     calculateOpenShortPosition(
@@ -1114,7 +871,7 @@ export class IPairExplorer extends BaseContract {
       shortable: string,
       amount: BigNumberish,
       leverageFactor: BigNumberish,
-      overrides?: CallOverrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     calculateProxyBalance(
@@ -1123,7 +880,7 @@ export class IPairExplorer extends BaseContract {
       tradable: string,
       trader: string,
       amountIn: BigNumberish,
-      overrides?: CallOverrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     calculateProxyShortBalance(
@@ -1132,7 +889,7 @@ export class IPairExplorer extends BaseContract {
       shortable: string,
       trader: string,
       amountIn: BigNumberish,
-      overrides?: CallOverrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     calculateShortBalance(
@@ -1140,14 +897,14 @@ export class IPairExplorer extends BaseContract {
       shortable: string,
       trader: string,
       amountIn: BigNumberish,
-      overrides?: CallOverrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     getPosition(
       trader: string,
       lendable: string,
       tradable: string,
-      overrides?: CallOverrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     getProxyPosition(
@@ -1155,7 +912,7 @@ export class IPairExplorer extends BaseContract {
       lendable: string,
       proxyLendable: string,
       tradable: string,
-      overrides?: CallOverrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     getProxyShortPosition(
@@ -1163,14 +920,14 @@ export class IPairExplorer extends BaseContract {
       lendable: string,
       proxyLendable: string,
       shortable: string,
-      overrides?: CallOverrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     getShortPosition(
       trader: string,
       lendable: string,
       shortable: string,
-      overrides?: CallOverrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };
 }

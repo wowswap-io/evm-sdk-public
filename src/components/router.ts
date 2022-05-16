@@ -1,49 +1,11 @@
 import { BigNumberish } from '@ethersproject/bignumber';
-import { BytesLike } from '@ethersproject/bytes';
 import { ethers, Wallet } from 'ethers';
 import { CoreRelevant, Pairs, Reserves } from '.';
-import { Pair__factory, Router__factory } from '../dependencies/protocol';
+import { AbstractLongPair__factory, Router__factory, Router as RouterContract } from '../dependencies/protocol';
 
-type OpenPositionRequest = {
-  amountIn: BigNumberish;
-  leverageFactor: BigNumberish;
-  amountOutMin: BigNumberish;
-  lendable: string;
-  proxy: string;
-  tradable: string;
-  trader: string;
-  deadline: BigNumberish;
-  referrer: string;
-  guardedPrice: {
-    minDeposit: BigNumberish;
-    minPrice: BigNumberish;
-    maxPrice: BigNumberish;
-    deadline: BigNumberish;
-    signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
-  };
-  terminationConditions: {
-    stopLossPercentage: BigNumberish;
-    takeProfitPercentage: BigNumberish;
-    deadline: BigNumberish;
-    signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
-  };
-  terminationReward: BigNumberish;
-  convertFromNative: boolean;
-};
-
-type ClosePositionRequest = {
-  short: boolean;
-  amountIn: BigNumberish;
-  amountOutMin: BigNumberish;
-  lendable: string;
-  proxy: string;
-  tradable: string;
-  trader: string;
-  deadline: BigNumberish;
-  referrer: string;
-  permit: { v: BigNumberish; r: BytesLike; s: BytesLike };
-  convertToNative: boolean;
-};
+export type ClosePositionRequest = Parameters<typeof RouterContract.prototype.closePosition>[0]
+export type OpenPositionRequest = Parameters<typeof RouterContract.prototype.openPosition>[0]
+export type OpenShortPositionRequest = Parameters<typeof RouterContract.prototype.openShortPosition>[0]
 
 const NAME = 'WOWswap';
 const VERSION = '1';
@@ -133,6 +95,15 @@ export class Router extends CoreRelevant<
 
     return this.router.connect(this.params.signer).openPosition(params);
   }
+  async useOpenShortPosition(params: OpenShortPositionRequest) {
+    if (!this.params.signer) {
+      throw new Error(
+        'Signer is required! Ensure signer configuration in Context params'
+      );
+    }
+
+    return this.router.connect(this.params.signer).openShortPosition(params);
+  }
 
   async useClosePermit(pair: string) {
     if (!this.signer) {
@@ -142,7 +113,7 @@ export class Router extends CoreRelevant<
     }
 
     const nonce = await this.core
-      .useContract(Pair__factory, pair)
+      .useContract(AbstractLongPair__factory, pair)
       .nonces(this.signer.address);
     const deadline = await this.context.provider
       .getBlock('latest')

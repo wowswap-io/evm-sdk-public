@@ -4,6 +4,8 @@
 export type { OwnableUpgradeable } from "./OwnableUpgradeable";
 export type { ERC20Upgradeable } from "./ERC20Upgradeable";
 export type { IERC20Upgradeable } from "./IERC20Upgradeable";
+export type { ERC20Permit } from "./ERC20Permit";
+export type { IERC20Permit } from "./IERC20Permit";
 export type { ERC20 } from "./ERC20";
 export type { IERC20 } from "./IERC20";
 export type { IERC20Detailed } from "./IERC20Detailed";
@@ -51,6 +53,8 @@ export type { ParamGovernanceV2 } from "./ParamGovernanceV2";
 export { OwnableUpgradeable__factory } from "./factories/OwnableUpgradeable__factory";
 export { ERC20Upgradeable__factory } from "./factories/ERC20Upgradeable__factory";
 export { IERC20Upgradeable__factory } from "./factories/IERC20Upgradeable__factory";
+export { ERC20Permit__factory } from "./factories/ERC20Permit__factory";
+export { IERC20Permit__factory } from "./factories/IERC20Permit__factory";
 export { ERC20__factory } from "./factories/ERC20__factory";
 export { IERC20__factory } from "./factories/IERC20__factory";
 export { IERC20Detailed__factory } from "./factories/IERC20Detailed__factory";

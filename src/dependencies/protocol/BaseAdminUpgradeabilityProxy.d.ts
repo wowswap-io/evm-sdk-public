@@ -18,7 +18,7 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface BaseAdminUpgradeabilityProxyInterface extends ethers.utils.Interface {
   functions: {
@@ -64,6 +64,12 @@ interface BaseAdminUpgradeabilityProxyInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "AdminChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Upgraded"): EventFragment;
 }
+
+export type AdminChangedEvent = TypedEvent<
+  [string, string] & { previousAdmin: string; newAdmin: string }
+>;
+
+export type UpgradedEvent = TypedEvent<[string] & { implementation: string }>;
 
 export class BaseAdminUpgradeabilityProxy extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -178,6 +184,14 @@ export class BaseAdminUpgradeabilityProxy extends BaseContract {
   };
 
   filters: {
+    "AdminChanged(address,address)"(
+      previousAdmin?: null,
+      newAdmin?: null
+    ): TypedEventFilter<
+      [string, string],
+      { previousAdmin: string; newAdmin: string }
+    >;
+
     AdminChanged(
       previousAdmin?: null,
       newAdmin?: null
@@ -185,6 +199,10 @@ export class BaseAdminUpgradeabilityProxy extends BaseContract {
       [string, string],
       { previousAdmin: string; newAdmin: string }
     >;
+
+    "Upgraded(address)"(
+      implementation?: string | null
+    ): TypedEventFilter<[string], { implementation: string }>;
 
     Upgraded(
       implementation?: string | null

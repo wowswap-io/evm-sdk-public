@@ -21,6 +21,7 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 interface GovernanceErrorsInterface extends ethers.utils.Interface {
   functions: {
     "G_INCONSISTENT_FEE_DISTRIBUTION_DATA()": FunctionFragment;
+    "G_INSUFFICIENT_XWOW_BALANCE()": FunctionFragment;
     "G_INVALID_ADDRESS_PARAMETER()": FunctionFragment;
     "G_INVALID_PARAMETER()": FunctionFragment;
     "G_ONLY_XWOW_ALLOWED()": FunctionFragment;
@@ -47,6 +48,10 @@ interface GovernanceErrorsInterface extends ethers.utils.Interface {
 
   encodeFunctionData(
     functionFragment: "G_INCONSISTENT_FEE_DISTRIBUTION_DATA",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "G_INSUFFICIENT_XWOW_BALANCE",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -140,6 +145,10 @@ interface GovernanceErrorsInterface extends ethers.utils.Interface {
 
   decodeFunctionResult(
     functionFragment: "G_INCONSISTENT_FEE_DISTRIBUTION_DATA",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "G_INSUFFICIENT_XWOW_BALANCE",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -282,6 +291,8 @@ export class GovernanceErrors extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
+    G_INSUFFICIENT_XWOW_BALANCE(overrides?: CallOverrides): Promise<[string]>;
+
     G_INVALID_ADDRESS_PARAMETER(overrides?: CallOverrides): Promise<[string]>;
 
     G_INVALID_PARAMETER(overrides?: CallOverrides): Promise<[string]>;
@@ -337,6 +348,8 @@ export class GovernanceErrors extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string>;
 
+  G_INSUFFICIENT_XWOW_BALANCE(overrides?: CallOverrides): Promise<string>;
+
   G_INVALID_ADDRESS_PARAMETER(overrides?: CallOverrides): Promise<string>;
 
   G_INVALID_PARAMETER(overrides?: CallOverrides): Promise<string>;
@@ -387,6 +400,8 @@ export class GovernanceErrors extends BaseContract {
     G_INCONSISTENT_FEE_DISTRIBUTION_DATA(
       overrides?: CallOverrides
     ): Promise<string>;
+
+    G_INSUFFICIENT_XWOW_BALANCE(overrides?: CallOverrides): Promise<string>;
 
     G_INVALID_ADDRESS_PARAMETER(overrides?: CallOverrides): Promise<string>;
 
@@ -446,6 +461,8 @@ export class GovernanceErrors extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    G_INSUFFICIENT_XWOW_BALANCE(overrides?: CallOverrides): Promise<BigNumber>;
+
     G_INVALID_ADDRESS_PARAMETER(overrides?: CallOverrides): Promise<BigNumber>;
 
     G_INVALID_PARAMETER(overrides?: CallOverrides): Promise<BigNumber>;
@@ -499,6 +516,10 @@ export class GovernanceErrors extends BaseContract {
 
   populateTransaction: {
     G_INCONSISTENT_FEE_DISTRIBUTION_DATA(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    G_INSUFFICIENT_XWOW_BALANCE(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

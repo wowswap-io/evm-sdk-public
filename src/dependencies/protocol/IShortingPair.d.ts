@@ -12,12 +12,13 @@ import {
   BaseContract,
   ContractTransaction,
   Overrides,
+  PayableOverrides,
   CallOverrides,
 } from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface IShortingPairInterface extends ethers.utils.Interface {
   functions: {
@@ -32,13 +33,16 @@ interface IShortingPairInterface extends ethers.utils.Interface {
     "getLoan(address)": FunctionFragment;
     "getRateMultiplier(uint256)": FunctionFragment;
     "getReserve()": FunctionFragment;
+    "getTerminationConditions(address)": FunctionFragment;
     "getTotalDeposit()": FunctionFragment;
     "getTotalLoan()": FunctionFragment;
     "initialize(address,address,address,address[],string,string)": FunctionFragment;
+    "isActive()": FunctionFragment;
     "liquidatePosition(address,address)": FunctionFragment;
-    "openPosition(address,uint256,uint256,address,tuple)": FunctionFragment;
-    "openPositionWithReferrer(address,uint256,uint256,address)": FunctionFragment;
+    "openPosition(address,uint256,uint256,uint256,address,(uint256,uint256,uint256,uint256,(uint8,bytes32,bytes32)))": FunctionFragment;
     "positionCosts(address)": FunctionFragment;
+    "setTerminationConditions(address,(uint256,uint256,uint256,(uint8,bytes32,bytes32)))": FunctionFragment;
+    "terminatePosition(address)": FunctionFragment;
     "underlyingBalanceOf(address)": FunctionFragment;
   };
 
@@ -81,6 +85,10 @@ interface IShortingPairInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "getTerminationConditions",
+    values: [string]
+  ): string;
+  encodeFunctionData(
     functionFragment: "getTotalDeposit",
     values?: undefined
   ): string;
@@ -92,6 +100,7 @@ interface IShortingPairInterface extends ethers.utils.Interface {
     functionFragment: "initialize",
     values: [string, string, string, string[], string, string]
   ): string;
+  encodeFunctionData(functionFragment: "isActive", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "liquidatePosition",
     values: [string, string]
@@ -100,6 +109,7 @@ interface IShortingPairInterface extends ethers.utils.Interface {
     functionFragment: "openPosition",
     values: [
       string,
+      BigNumberish,
       BigNumberish,
       BigNumberish,
       string,
@@ -113,11 +123,23 @@ interface IShortingPairInterface extends ethers.utils.Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "openPositionWithReferrer",
-    values: [string, BigNumberish, BigNumberish, string]
+    functionFragment: "positionCosts",
+    values: [string]
   ): string;
   encodeFunctionData(
-    functionFragment: "positionCosts",
+    functionFragment: "setTerminationConditions",
+    values: [
+      string,
+      {
+        stopLossPercentage: BigNumberish;
+        takeProfitPercentage: BigNumberish;
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      }
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "terminatePosition",
     values: [string]
   ): string;
   encodeFunctionData(
@@ -161,6 +183,10 @@ interface IShortingPairInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "getReserve", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "getTerminationConditions",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getTotalDeposit",
     data: BytesLike
   ): Result;
@@ -169,6 +195,7 @@ interface IShortingPairInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "isActive", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "liquidatePosition",
     data: BytesLike
@@ -178,11 +205,15 @@ interface IShortingPairInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "openPositionWithReferrer",
+    functionFragment: "positionCosts",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "positionCosts",
+    functionFragment: "setTerminationConditions",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "terminatePosition",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -198,6 +229,26 @@ interface IShortingPairInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "ChangedPosition"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Liquidated"): EventFragment;
 }
+
+export type ChangedPositionEvent = TypedEvent<
+  [string, BigNumber, BigNumber, BigNumber, BigNumber] & {
+    trader: string;
+    amount: BigNumber;
+    loan: BigNumber;
+    cost: BigNumber;
+    liquidationCost: BigNumber;
+  }
+>;
+
+export type LiquidatedEvent = TypedEvent<
+  [string, BigNumber, BigNumber, BigNumber, BigNumber] & {
+    trader: string;
+    amount: BigNumber;
+    loanPaid: BigNumber;
+    cost: BigNumber;
+    liquidationCost: BigNumber;
+  }
+>;
 
 export class IShortingPair extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -252,8 +303,8 @@ export class IShortingPair extends BaseContract {
     calculateLoan(
       deposit: BigNumberish,
       leverageFactor: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     closePosition(
       trader: string,
@@ -270,8 +321,8 @@ export class IShortingPair extends BaseContract {
 
     getAmountOut(
       amountIn: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     getBorrowLimit(overrides?: CallOverrides): Promise<[BigNumber]>;
 
@@ -291,6 +342,20 @@ export class IShortingPair extends BaseContract {
 
     getReserve(overrides?: CallOverrides): Promise<[string]>;
 
+    getTerminationConditions(
+      trader: string,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        }
+      ]
+    >;
+
     getTotalDeposit(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     getTotalLoan(overrides?: CallOverrides): Promise<[BigNumber]>;
@@ -305,6 +370,8 @@ export class IShortingPair extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    isActive(overrides?: CallOverrides): Promise<[boolean]>;
+
     liquidatePosition(
       trader: string,
       liquidator: string,
@@ -313,6 +380,7 @@ export class IShortingPair extends BaseContract {
 
     openPosition(
       trader: string,
+      baseBorrowAmount: BigNumberish,
       leverageFactor: BigNumberish,
       amountOutMin: BigNumberish,
       referrer: string,
@@ -326,23 +394,26 @@ export class IShortingPair extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    openPositionWithReferrer(
+    positionCosts(
       trader: string,
-      leverageFactor: BigNumberish,
-      amountOutMin: BigNumberish,
-      referrer: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    positionCosts(
+    setTerminationConditions(
       trader: string,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber] & {
-        currentCost: BigNumber;
-        liquidationCost: BigNumber;
-      }
-    >;
+      request: {
+        stopLossPercentage: BigNumberish;
+        takeProfitPercentage: BigNumberish;
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      },
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    terminatePosition(
+      trader: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     underlyingBalanceOf(
       account: string,
@@ -359,8 +430,8 @@ export class IShortingPair extends BaseContract {
   calculateLoan(
     deposit: BigNumberish,
     leverageFactor: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   closePosition(
     trader: string,
@@ -377,8 +448,8 @@ export class IShortingPair extends BaseContract {
 
   getAmountOut(
     amountIn: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   getBorrowLimit(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -398,6 +469,18 @@ export class IShortingPair extends BaseContract {
 
   getReserve(overrides?: CallOverrides): Promise<string>;
 
+  getTerminationConditions(
+    trader: string,
+    overrides?: CallOverrides
+  ): Promise<
+    [BigNumber, BigNumber, BigNumber, BigNumber] & {
+      expirationDate: BigNumber;
+      stopLossPercentage: BigNumber;
+      takeProfitPercentage: BigNumber;
+      terminationReward: BigNumber;
+    }
+  >;
+
   getTotalDeposit(overrides?: CallOverrides): Promise<BigNumber>;
 
   getTotalLoan(overrides?: CallOverrides): Promise<BigNumber>;
@@ -412,6 +495,8 @@ export class IShortingPair extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  isActive(overrides?: CallOverrides): Promise<boolean>;
+
   liquidatePosition(
     trader: string,
     liquidator: string,
@@ -420,6 +505,7 @@ export class IShortingPair extends BaseContract {
 
   openPosition(
     trader: string,
+    baseBorrowAmount: BigNumberish,
     leverageFactor: BigNumberish,
     amountOutMin: BigNumberish,
     referrer: string,
@@ -433,23 +519,26 @@ export class IShortingPair extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  openPositionWithReferrer(
+  positionCosts(
     trader: string,
-    leverageFactor: BigNumberish,
-    amountOutMin: BigNumberish,
-    referrer: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  positionCosts(
+  setTerminationConditions(
     trader: string,
-    overrides?: CallOverrides
-  ): Promise<
-    [BigNumber, BigNumber] & {
-      currentCost: BigNumber;
-      liquidationCost: BigNumber;
-    }
-  >;
+    request: {
+      stopLossPercentage: BigNumberish;
+      takeProfitPercentage: BigNumberish;
+      deadline: BigNumberish;
+      signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+    },
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  terminatePosition(
+    trader: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   underlyingBalanceOf(
     account: string,
@@ -505,6 +594,18 @@ export class IShortingPair extends BaseContract {
 
     getReserve(overrides?: CallOverrides): Promise<string>;
 
+    getTerminationConditions(
+      trader: string,
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber, BigNumber, BigNumber] & {
+        expirationDate: BigNumber;
+        stopLossPercentage: BigNumber;
+        takeProfitPercentage: BigNumber;
+        terminationReward: BigNumber;
+      }
+    >;
+
     getTotalDeposit(overrides?: CallOverrides): Promise<BigNumber>;
 
     getTotalLoan(overrides?: CallOverrides): Promise<BigNumber>;
@@ -519,6 +620,8 @@ export class IShortingPair extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    isActive(overrides?: CallOverrides): Promise<boolean>;
+
     liquidatePosition(
       trader: string,
       liquidator: string,
@@ -527,6 +630,7 @@ export class IShortingPair extends BaseContract {
 
     openPosition(
       trader: string,
+      baseBorrowAmount: BigNumberish,
       leverageFactor: BigNumberish,
       amountOutMin: BigNumberish,
       referrer: string,
@@ -540,14 +644,6 @@ export class IShortingPair extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    openPositionWithReferrer(
-      trader: string,
-      leverageFactor: BigNumberish,
-      amountOutMin: BigNumberish,
-      referrer: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     positionCosts(
       trader: string,
       overrides?: CallOverrides
@@ -558,6 +654,19 @@ export class IShortingPair extends BaseContract {
       }
     >;
 
+    setTerminationConditions(
+      trader: string,
+      request: {
+        stopLossPercentage: BigNumberish;
+        takeProfitPercentage: BigNumberish;
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      },
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    terminatePosition(trader: string, overrides?: CallOverrides): Promise<void>;
+
     underlyingBalanceOf(
       account: string,
       overrides?: CallOverrides
@@ -565,6 +674,23 @@ export class IShortingPair extends BaseContract {
   };
 
   filters: {
+    "ChangedPosition(address,uint256,uint256,uint256,uint256)"(
+      trader?: string | null,
+      amount?: null,
+      loan?: null,
+      cost?: null,
+      liquidationCost?: null
+    ): TypedEventFilter<
+      [string, BigNumber, BigNumber, BigNumber, BigNumber],
+      {
+        trader: string;
+        amount: BigNumber;
+        loan: BigNumber;
+        cost: BigNumber;
+        liquidationCost: BigNumber;
+      }
+    >;
+
     ChangedPosition(
       trader?: string | null,
       amount?: null,
@@ -577,6 +703,23 @@ export class IShortingPair extends BaseContract {
         trader: string;
         amount: BigNumber;
         loan: BigNumber;
+        cost: BigNumber;
+        liquidationCost: BigNumber;
+      }
+    >;
+
+    "Liquidated(address,uint256,uint256,uint256,uint256)"(
+      trader?: string | null,
+      amount?: null,
+      loanPaid?: null,
+      cost?: null,
+      liquidationCost?: null
+    ): TypedEventFilter<
+      [string, BigNumber, BigNumber, BigNumber, BigNumber],
+      {
+        trader: string;
+        amount: BigNumber;
+        loanPaid: BigNumber;
         cost: BigNumber;
         liquidationCost: BigNumber;
       }
@@ -610,7 +753,7 @@ export class IShortingPair extends BaseContract {
     calculateLoan(
       deposit: BigNumberish,
       leverageFactor: BigNumberish,
-      overrides?: CallOverrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     closePosition(
@@ -628,7 +771,7 @@ export class IShortingPair extends BaseContract {
 
     getAmountOut(
       amountIn: BigNumberish,
-      overrides?: CallOverrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     getBorrowLimit(overrides?: CallOverrides): Promise<BigNumber>;
@@ -649,6 +792,11 @@ export class IShortingPair extends BaseContract {
 
     getReserve(overrides?: CallOverrides): Promise<BigNumber>;
 
+    getTerminationConditions(
+      trader: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getTotalDeposit(overrides?: CallOverrides): Promise<BigNumber>;
 
     getTotalLoan(overrides?: CallOverrides): Promise<BigNumber>;
@@ -663,6 +811,8 @@ export class IShortingPair extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    isActive(overrides?: CallOverrides): Promise<BigNumber>;
+
     liquidatePosition(
       trader: string,
       liquidator: string,
@@ -671,6 +821,7 @@ export class IShortingPair extends BaseContract {
 
     openPosition(
       trader: string,
+      baseBorrowAmount: BigNumberish,
       leverageFactor: BigNumberish,
       amountOutMin: BigNumberish,
       referrer: string,
@@ -684,17 +835,25 @@ export class IShortingPair extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    openPositionWithReferrer(
+    positionCosts(
       trader: string,
-      leverageFactor: BigNumberish,
-      amountOutMin: BigNumberish,
-      referrer: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    positionCosts(
+    setTerminationConditions(
       trader: string,
-      overrides?: CallOverrides
+      request: {
+        stopLossPercentage: BigNumberish;
+        takeProfitPercentage: BigNumberish;
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      },
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    terminatePosition(
+      trader: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     underlyingBalanceOf(
@@ -713,7 +872,7 @@ export class IShortingPair extends BaseContract {
     calculateLoan(
       deposit: BigNumberish,
       leverageFactor: BigNumberish,
-      overrides?: CallOverrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     closePosition(
@@ -731,7 +890,7 @@ export class IShortingPair extends BaseContract {
 
     getAmountOut(
       amountIn: BigNumberish,
-      overrides?: CallOverrides
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     getBorrowLimit(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -758,6 +917,11 @@ export class IShortingPair extends BaseContract {
 
     getReserve(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    getTerminationConditions(
+      trader: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     getTotalDeposit(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getTotalLoan(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -772,6 +936,8 @@ export class IShortingPair extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    isActive(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     liquidatePosition(
       trader: string,
       liquidator: string,
@@ -780,6 +946,7 @@ export class IShortingPair extends BaseContract {
 
     openPosition(
       trader: string,
+      baseBorrowAmount: BigNumberish,
       leverageFactor: BigNumberish,
       amountOutMin: BigNumberish,
       referrer: string,
@@ -793,17 +960,25 @@ export class IShortingPair extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    openPositionWithReferrer(
+    positionCosts(
       trader: string,
-      leverageFactor: BigNumberish,
-      amountOutMin: BigNumberish,
-      referrer: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    positionCosts(
+    setTerminationConditions(
       trader: string,
-      overrides?: CallOverrides
+      request: {
+        stopLossPercentage: BigNumberish;
+        takeProfitPercentage: BigNumberish;
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      },
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    terminatePosition(
+      trader: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     underlyingBalanceOf(

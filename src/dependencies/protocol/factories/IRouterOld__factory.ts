@@ -66,7 +66,7 @@ const _abi = [
         type: "uint256",
       },
     ],
-    stateMutability: "view",
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -114,8 +114,35 @@ const _abi = [
         name: "liquidationCost",
         type: "uint256",
       },
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "expirationDate",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "stopLossPercentage",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "takeProfitPercentage",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "terminationReward",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct TerminationConditions",
+        name: "terminationConditions",
+        type: "tuple",
+      },
     ],
-    stateMutability: "view",
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -168,8 +195,35 @@ const _abi = [
         name: "liquidationCost",
         type: "uint256",
       },
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "expirationDate",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "stopLossPercentage",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "takeProfitPercentage",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "terminationReward",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct TerminationConditions",
+        name: "terminationConditions",
+        type: "tuple",
+      },
     ],
-    stateMutability: "view",
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -222,8 +276,35 @@ const _abi = [
         name: "liquidationCost",
         type: "uint256",
       },
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "expirationDate",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "stopLossPercentage",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "takeProfitPercentage",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "terminationReward",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct TerminationConditions",
+        name: "terminationConditions",
+        type: "tuple",
+      },
     ],
-    stateMutability: "view",
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -271,8 +352,35 @@ const _abi = [
         name: "liquidationCost",
         type: "uint256",
       },
+      {
+        components: [
+          {
+            internalType: "uint256",
+            name: "expirationDate",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "stopLossPercentage",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "takeProfitPercentage",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "terminationReward",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct TerminationConditions",
+        name: "terminationConditions",
+        type: "tuple",
+      },
     ],
-    stateMutability: "view",
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -326,7 +434,7 @@ const _abi = [
         type: "uint256",
       },
     ],
-    stateMutability: "view",
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -380,7 +488,7 @@ const _abi = [
         type: "uint256",
       },
     ],
-    stateMutability: "view",
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -429,7 +537,7 @@ const _abi = [
         type: "uint256",
       },
     ],
-    stateMutability: "view",
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -1121,13 +1229,40 @@ const _abi = [
             name: "liquidationCost",
             type: "uint256",
           },
+          {
+            components: [
+              {
+                internalType: "uint256",
+                name: "expirationDate",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "stopLossPercentage",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "takeProfitPercentage",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "terminationReward",
+                type: "uint256",
+              },
+            ],
+            internalType: "struct TerminationConditions",
+            name: "terminationConditions",
+            type: "tuple",
+          },
         ],
         internalType: "struct Position",
         name: "position",
         type: "tuple",
       },
     ],
-    stateMutability: "view",
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -1197,13 +1332,40 @@ const _abi = [
             name: "liquidationCost",
             type: "uint256",
           },
+          {
+            components: [
+              {
+                internalType: "uint256",
+                name: "expirationDate",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "stopLossPercentage",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "takeProfitPercentage",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "terminationReward",
+                type: "uint256",
+              },
+            ],
+            internalType: "struct TerminationConditions",
+            name: "terminationConditions",
+            type: "tuple",
+          },
         ],
         internalType: "struct Position",
         name: "position",
         type: "tuple",
       },
     ],
-    stateMutability: "view",
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -1273,13 +1435,40 @@ const _abi = [
             name: "liquidationCost",
             type: "uint256",
           },
+          {
+            components: [
+              {
+                internalType: "uint256",
+                name: "expirationDate",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "stopLossPercentage",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "takeProfitPercentage",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "terminationReward",
+                type: "uint256",
+              },
+            ],
+            internalType: "struct TerminationConditions",
+            name: "terminationConditions",
+            type: "tuple",
+          },
         ],
         internalType: "struct Position",
         name: "position",
         type: "tuple",
       },
     ],
-    stateMutability: "view",
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -1344,13 +1533,40 @@ const _abi = [
             name: "liquidationCost",
             type: "uint256",
           },
+          {
+            components: [
+              {
+                internalType: "uint256",
+                name: "expirationDate",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "stopLossPercentage",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "takeProfitPercentage",
+                type: "uint256",
+              },
+              {
+                internalType: "uint256",
+                name: "terminationReward",
+                type: "uint256",
+              },
+            ],
+            internalType: "struct TerminationConditions",
+            name: "terminationConditions",
+            type: "tuple",
+          },
         ],
         internalType: "struct Position",
         name: "position",
         type: "tuple",
       },
     ],
-    stateMutability: "view",
+    stateMutability: "nonpayable",
     type: "function",
   },
   {

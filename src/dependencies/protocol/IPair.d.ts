@@ -18,7 +18,7 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import type { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface IPairInterface extends ethers.utils.Interface {
   functions: {
@@ -192,23 +192,23 @@ interface IPairInterface extends ethers.utils.Interface {
 
 export type ChangedPositionEvent = TypedEvent<
   [string, BigNumber, BigNumber, BigNumber, BigNumber] & {
-  trader: string;
-  amount: BigNumber;
-  loan: BigNumber;
-  cost: BigNumber;
-  liquidationCost: BigNumber;
-}
-  >;
+    trader: string;
+    amount: BigNumber;
+    loan: BigNumber;
+    cost: BigNumber;
+    liquidationCost: BigNumber;
+  }
+>;
 
 export type LiquidatedEvent = TypedEvent<
   [string, BigNumber, BigNumber, BigNumber, BigNumber] & {
-  trader: string;
-  amount: BigNumber;
-  loanPaid: BigNumber;
-  cost: BigNumber;
-  liquidationCost: BigNumber;
-}
-  >;
+    trader: string;
+    amount: BigNumber;
+    loanPaid: BigNumber;
+    cost: BigNumber;
+    liquidationCost: BigNumber;
+  }
+>;
 
 export class IPair extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -301,14 +301,14 @@ export class IPair extends BaseContract {
       overrides?: CallOverrides
     ): Promise<
       [
-          [BigNumber, BigNumber, BigNumber, BigNumber] & {
+        [BigNumber, BigNumber, BigNumber, BigNumber] & {
           expirationDate: BigNumber;
           stopLossPercentage: BigNumber;
           takeProfitPercentage: BigNumber;
           terminationReward: BigNumber;
         }
       ]
-      >;
+    >;
 
     getTotalDeposit(overrides?: CallOverrides): Promise<[BigNumber]>;
 
@@ -401,12 +401,12 @@ export class IPair extends BaseContract {
     overrides?: CallOverrides
   ): Promise<
     [BigNumber, BigNumber, BigNumber, BigNumber] & {
-    expirationDate: BigNumber;
-    stopLossPercentage: BigNumber;
-    takeProfitPercentage: BigNumber;
-    terminationReward: BigNumber;
-  }
-    >;
+      expirationDate: BigNumber;
+      stopLossPercentage: BigNumber;
+      takeProfitPercentage: BigNumber;
+      terminationReward: BigNumber;
+    }
+  >;
 
   getTotalDeposit(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -499,12 +499,12 @@ export class IPair extends BaseContract {
       overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber] & {
-      expirationDate: BigNumber;
-      stopLossPercentage: BigNumber;
-      takeProfitPercentage: BigNumber;
-      terminationReward: BigNumber;
-    }
-      >;
+        expirationDate: BigNumber;
+        stopLossPercentage: BigNumber;
+        takeProfitPercentage: BigNumber;
+        terminationReward: BigNumber;
+      }
+    >;
 
     getTotalDeposit(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -533,10 +533,10 @@ export class IPair extends BaseContract {
       overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber] & {
-      currentCost: BigNumber;
-      liquidationCost: BigNumber;
-    }
-      >;
+        currentCost: BigNumber;
+        liquidationCost: BigNumber;
+      }
+    >;
 
     setTerminationConditions(
       trader: string,
@@ -568,7 +568,7 @@ export class IPair extends BaseContract {
         cost: BigNumber;
         liquidationCost: BigNumber;
       }
-      >;
+    >;
 
     ChangedPosition(
       trader?: string | null,
@@ -585,7 +585,7 @@ export class IPair extends BaseContract {
         cost: BigNumber;
         liquidationCost: BigNumber;
       }
-      >;
+    >;
 
     "Liquidated(address,uint256,uint256,uint256,uint256)"(
       trader?: string | null,
@@ -602,7 +602,7 @@ export class IPair extends BaseContract {
         cost: BigNumber;
         liquidationCost: BigNumber;
       }
-      >;
+    >;
 
     Liquidated(
       trader?: string | null,
@@ -619,7 +619,7 @@ export class IPair extends BaseContract {
         cost: BigNumber;
         liquidationCost: BigNumber;
       }
-      >;
+    >;
   };
 
   estimateGas: {

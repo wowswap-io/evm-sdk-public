@@ -17,14 +17,14 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface ParamProviderV1Interface extends ethers.utils.Interface {
   functions: {
     "REVISION()": FunctionFragment;
     "baseBorrowRate()": FunctionFragment;
     "excessSlope()": FunctionFragment;
-    "initialize(address,tuple,tuple,tuple[])": FunctionFragment;
+    "initialize(address,(uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256),(uint256,uint256),tuple[])": FunctionFragment;
     "liquidationMargin()": FunctionFragment;
     "liquidationReward()": FunctionFragment;
     "maxLeverageFactor()": FunctionFragment;
@@ -48,7 +48,7 @@ interface ParamProviderV1Interface extends ethers.utils.Interface {
     "setMinWOWBalance(uint256,uint256)": FunctionFragment;
     "setOptimalSlope(uint256)": FunctionFragment;
     "setOptimalUtilization(uint256)": FunctionFragment;
-    "setParameters(tuple)": FunctionFragment;
+    "setParameters((uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256))": FunctionFragment;
     "setPoolUtilizationAllowance(uint256)": FunctionFragment;
     "setTraderProfitFee(uint256)": FunctionFragment;
     "setTreasureFactor(uint256)": FunctionFragment;
@@ -353,6 +353,10 @@ interface ParamProviderV1Interface extends ethers.utils.Interface {
 
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
 }
+
+export type OwnershipTransferredEvent = TypedEvent<
+  [string, string] & { previousOwner: string; newOwner: string }
+>;
 
 export class ParamProviderV1 extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -874,6 +878,14 @@ export class ParamProviderV1 extends BaseContract {
   };
 
   filters: {
+    "OwnershipTransferred(address,address)"(
+      previousOwner?: string | null,
+      newOwner?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { previousOwner: string; newOwner: string }
+    >;
+
     OwnershipTransferred(
       previousOwner?: string | null,
       newOwner?: string | null

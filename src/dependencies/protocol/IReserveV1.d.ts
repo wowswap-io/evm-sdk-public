@@ -17,7 +17,7 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface IReserveV1Interface extends ethers.utils.Interface {
   functions: {
@@ -204,6 +204,42 @@ interface IReserveV1Interface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "Repay"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Withdraw"): EventFragment;
 }
+
+export type BorrowEvent = TypedEvent<
+  [string, string, BigNumber] & {
+    reserve: string;
+    trader: string;
+    amount: BigNumber;
+  }
+>;
+
+export type DepositEvent = TypedEvent<
+  [string, string, BigNumber] & {
+    reserve: string;
+    investor: string;
+    amount: BigNumber;
+  }
+>;
+
+export type LiquidateEvent = TypedEvent<
+  [string, string] & { reserve: string; trader: string }
+>;
+
+export type RepayEvent = TypedEvent<
+  [string, string, BigNumber] & {
+    reserve: string;
+    trader: string;
+    amount: BigNumber;
+  }
+>;
+
+export type WithdrawEvent = TypedEvent<
+  [string, string, BigNumber] & {
+    reserve: string;
+    investor: string;
+    amount: BigNumber;
+  }
+>;
 
 export class IReserveV1 extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -653,6 +689,15 @@ export class IReserveV1 extends BaseContract {
   };
 
   filters: {
+    "Borrow(address,address,uint256)"(
+      reserve?: string | null,
+      trader?: string | null,
+      amount?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { reserve: string; trader: string; amount: BigNumber }
+    >;
+
     Borrow(
       reserve?: string | null,
       trader?: string | null,
@@ -660,6 +705,15 @@ export class IReserveV1 extends BaseContract {
     ): TypedEventFilter<
       [string, string, BigNumber],
       { reserve: string; trader: string; amount: BigNumber }
+    >;
+
+    "Deposit(address,address,uint256)"(
+      reserve?: string | null,
+      investor?: string | null,
+      amount?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { reserve: string; investor: string; amount: BigNumber }
     >;
 
     Deposit(
@@ -671,10 +725,24 @@ export class IReserveV1 extends BaseContract {
       { reserve: string; investor: string; amount: BigNumber }
     >;
 
+    "Liquidate(address,address)"(
+      reserve?: string | null,
+      trader?: string | null
+    ): TypedEventFilter<[string, string], { reserve: string; trader: string }>;
+
     Liquidate(
       reserve?: string | null,
       trader?: string | null
     ): TypedEventFilter<[string, string], { reserve: string; trader: string }>;
+
+    "Repay(address,address,uint256)"(
+      reserve?: string | null,
+      trader?: string | null,
+      amount?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { reserve: string; trader: string; amount: BigNumber }
+    >;
 
     Repay(
       reserve?: string | null,
@@ -683,6 +751,15 @@ export class IReserveV1 extends BaseContract {
     ): TypedEventFilter<
       [string, string, BigNumber],
       { reserve: string; trader: string; amount: BigNumber }
+    >;
+
+    "Withdraw(address,address,uint256)"(
+      reserve?: string | null,
+      investor?: string | null,
+      amount?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { reserve: string; investor: string; amount: BigNumber }
     >;
 
     Withdraw(

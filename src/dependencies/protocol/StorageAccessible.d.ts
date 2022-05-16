@@ -11,36 +11,32 @@ import {
   PopulatedTransaction,
   BaseContract,
   ContractTransaction,
-  Overrides,
   CallOverrides,
 } from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
-interface ShortingPairDeployerNextInterface extends ethers.utils.Interface {
+interface StorageAccessibleInterface extends ethers.utils.Interface {
   functions: {
-    "REVISION()": FunctionFragment;
-    "getPairImplementation()": FunctionFragment;
+    "getStorageAt(bytes32)": FunctionFragment;
   };
 
-  encodeFunctionData(functionFragment: "REVISION", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "getPairImplementation",
-    values?: undefined
+    functionFragment: "getStorageAt",
+    values: [BytesLike]
   ): string;
 
-  decodeFunctionResult(functionFragment: "REVISION", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "getPairImplementation",
+    functionFragment: "getStorageAt",
     data: BytesLike
   ): Result;
 
   events: {};
 }
 
-export class ShortingPairDeployerNext extends BaseContract {
+export class StorageAccessible extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -81,43 +77,34 @@ export class ShortingPairDeployerNext extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: ShortingPairDeployerNextInterface;
+  interface: StorageAccessibleInterface;
 
   functions: {
-    REVISION(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    getPairImplementation(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    getStorageAt(
+      offset: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
   };
 
-  REVISION(overrides?: CallOverrides): Promise<BigNumber>;
-
-  getPairImplementation(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  getStorageAt(offset: BytesLike, overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
-    REVISION(overrides?: CallOverrides): Promise<BigNumber>;
-
-    getPairImplementation(overrides?: CallOverrides): Promise<string>;
+    getStorageAt(offset: BytesLike, overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {};
 
   estimateGas: {
-    REVISION(overrides?: CallOverrides): Promise<BigNumber>;
-
-    getPairImplementation(
-      overrides?: Overrides & { from?: string | Promise<string> }
+    getStorageAt(
+      offset: BytesLike,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    REVISION(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    getPairImplementation(
-      overrides?: Overrides & { from?: string | Promise<string> }
+    getStorageAt(
+      offset: BytesLike,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };
 }

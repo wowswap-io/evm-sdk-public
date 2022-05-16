@@ -17,7 +17,7 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface ReserveV1Interface extends ethers.utils.Interface {
   functions: {
@@ -306,6 +306,58 @@ interface ReserveV1Interface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Withdraw"): EventFragment;
 }
+
+export type ApprovalEvent = TypedEvent<
+  [string, string, BigNumber] & {
+    owner: string;
+    spender: string;
+    value: BigNumber;
+  }
+>;
+
+export type BorrowEvent = TypedEvent<
+  [string, string, BigNumber] & {
+    reserve: string;
+    trader: string;
+    amount: BigNumber;
+  }
+>;
+
+export type DepositEvent = TypedEvent<
+  [string, string, BigNumber] & {
+    reserve: string;
+    investor: string;
+    amount: BigNumber;
+  }
+>;
+
+export type LiquidateEvent = TypedEvent<
+  [string, string] & { reserve: string; trader: string }
+>;
+
+export type OwnershipTransferredEvent = TypedEvent<
+  [string, string] & { previousOwner: string; newOwner: string }
+>;
+
+export type RepayEvent = TypedEvent<
+  [string, string, BigNumber] & {
+    reserve: string;
+    trader: string;
+    amount: BigNumber;
+  }
+>;
+
+export type TransferEvent = TypedEvent<
+  [string, string, BigNumber] & { from: string; to: string; value: BigNumber }
+>;
+
+export type WithdrawEvent = TypedEvent<
+  [string, string, BigNumber] & {
+    reserve: string;
+    investor: string;
+    amount: BigNumber;
+  }
+>;
 
 export class ReserveV1 extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -968,6 +1020,15 @@ export class ReserveV1 extends BaseContract {
   };
 
   filters: {
+    "Approval(address,address,uint256)"(
+      owner?: string | null,
+      spender?: string | null,
+      value?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { owner: string; spender: string; value: BigNumber }
+    >;
+
     Approval(
       owner?: string | null,
       spender?: string | null,
@@ -975,6 +1036,15 @@ export class ReserveV1 extends BaseContract {
     ): TypedEventFilter<
       [string, string, BigNumber],
       { owner: string; spender: string; value: BigNumber }
+    >;
+
+    "Borrow(address,address,uint256)"(
+      reserve?: string | null,
+      trader?: string | null,
+      amount?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { reserve: string; trader: string; amount: BigNumber }
     >;
 
     Borrow(
@@ -986,6 +1056,15 @@ export class ReserveV1 extends BaseContract {
       { reserve: string; trader: string; amount: BigNumber }
     >;
 
+    "Deposit(address,address,uint256)"(
+      reserve?: string | null,
+      investor?: string | null,
+      amount?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { reserve: string; investor: string; amount: BigNumber }
+    >;
+
     Deposit(
       reserve?: string | null,
       investor?: string | null,
@@ -995,10 +1074,23 @@ export class ReserveV1 extends BaseContract {
       { reserve: string; investor: string; amount: BigNumber }
     >;
 
+    "Liquidate(address,address)"(
+      reserve?: string | null,
+      trader?: string | null
+    ): TypedEventFilter<[string, string], { reserve: string; trader: string }>;
+
     Liquidate(
       reserve?: string | null,
       trader?: string | null
     ): TypedEventFilter<[string, string], { reserve: string; trader: string }>;
+
+    "OwnershipTransferred(address,address)"(
+      previousOwner?: string | null,
+      newOwner?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { previousOwner: string; newOwner: string }
+    >;
 
     OwnershipTransferred(
       previousOwner?: string | null,
@@ -1006,6 +1098,15 @@ export class ReserveV1 extends BaseContract {
     ): TypedEventFilter<
       [string, string],
       { previousOwner: string; newOwner: string }
+    >;
+
+    "Repay(address,address,uint256)"(
+      reserve?: string | null,
+      trader?: string | null,
+      amount?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { reserve: string; trader: string; amount: BigNumber }
     >;
 
     Repay(
@@ -1017,6 +1118,15 @@ export class ReserveV1 extends BaseContract {
       { reserve: string; trader: string; amount: BigNumber }
     >;
 
+    "Transfer(address,address,uint256)"(
+      from?: string | null,
+      to?: string | null,
+      value?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { from: string; to: string; value: BigNumber }
+    >;
+
     Transfer(
       from?: string | null,
       to?: string | null,
@@ -1024,6 +1134,15 @@ export class ReserveV1 extends BaseContract {
     ): TypedEventFilter<
       [string, string, BigNumber],
       { from: string; to: string; value: BigNumber }
+    >;
+
+    "Withdraw(address,address,uint256)"(
+      reserve?: string | null,
+      investor?: string | null,
+      amount?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { reserve: string; investor: string; amount: BigNumber }
     >;
 
     Withdraw(

@@ -18,7 +18,7 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import type { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface RouterInterface extends ethers.utils.Interface {
   functions: {
@@ -944,12 +944,12 @@ export class Router extends BaseContract {
       overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber] & {
-      amountOut: BigNumber;
-      profit: BigNumber;
-      debtPayable: BigNumber;
-      protocolFee: BigNumber;
-    }
-      >;
+        amountOut: BigNumber;
+        profit: BigNumber;
+        debtPayable: BigNumber;
+        protocolFee: BigNumber;
+      }
+    >;
 
     calculateOpenPosition(
       lendable: string,
@@ -963,25 +963,25 @@ export class Router extends BaseContract {
         BigNumber,
         BigNumber,
         BigNumber,
-          [BigNumber, BigNumber, BigNumber, BigNumber] & {
+        [BigNumber, BigNumber, BigNumber, BigNumber] & {
           expirationDate: BigNumber;
           stopLossPercentage: BigNumber;
           takeProfitPercentage: BigNumber;
           terminationReward: BigNumber;
         }
       ] & {
-      maxAmountIn: BigNumber;
-      borrowAmount: BigNumber;
-      borrowRate: BigNumber;
-      liquidationCost: BigNumber;
-      terminationConditions: [BigNumber, BigNumber, BigNumber, BigNumber] & {
-        expirationDate: BigNumber;
-        stopLossPercentage: BigNumber;
-        takeProfitPercentage: BigNumber;
-        terminationReward: BigNumber;
-      };
-    }
-      >;
+        maxAmountIn: BigNumber;
+        borrowAmount: BigNumber;
+        borrowRate: BigNumber;
+        liquidationCost: BigNumber;
+        terminationConditions: [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        };
+      }
+    >;
 
     calculateOpenProxyPosition(
       lendable: string,
@@ -996,25 +996,25 @@ export class Router extends BaseContract {
         BigNumber,
         BigNumber,
         BigNumber,
-          [BigNumber, BigNumber, BigNumber, BigNumber] & {
+        [BigNumber, BigNumber, BigNumber, BigNumber] & {
           expirationDate: BigNumber;
           stopLossPercentage: BigNumber;
           takeProfitPercentage: BigNumber;
           terminationReward: BigNumber;
         }
       ] & {
-      maxAmountIn: BigNumber;
-      borrowAmount: BigNumber;
-      borrowRate: BigNumber;
-      liquidationCost: BigNumber;
-      terminationConditions: [BigNumber, BigNumber, BigNumber, BigNumber] & {
-        expirationDate: BigNumber;
-        stopLossPercentage: BigNumber;
-        takeProfitPercentage: BigNumber;
-        terminationReward: BigNumber;
-      };
-    }
-      >;
+        maxAmountIn: BigNumber;
+        borrowAmount: BigNumber;
+        borrowRate: BigNumber;
+        liquidationCost: BigNumber;
+        terminationConditions: [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        };
+      }
+    >;
 
     calculateOpenProxyShortPosition(
       lendable: string,
@@ -1029,25 +1029,25 @@ export class Router extends BaseContract {
         BigNumber,
         BigNumber,
         BigNumber,
-          [BigNumber, BigNumber, BigNumber, BigNumber] & {
+        [BigNumber, BigNumber, BigNumber, BigNumber] & {
           expirationDate: BigNumber;
           stopLossPercentage: BigNumber;
           takeProfitPercentage: BigNumber;
           terminationReward: BigNumber;
         }
       ] & {
-      maxAmountIn: BigNumber;
-      borrowAmount: BigNumber;
-      borrowRate: BigNumber;
-      liquidationCost: BigNumber;
-      terminationConditions: [BigNumber, BigNumber, BigNumber, BigNumber] & {
-        expirationDate: BigNumber;
-        stopLossPercentage: BigNumber;
-        takeProfitPercentage: BigNumber;
-        terminationReward: BigNumber;
-      };
-    }
-      >;
+        maxAmountIn: BigNumber;
+        borrowAmount: BigNumber;
+        borrowRate: BigNumber;
+        liquidationCost: BigNumber;
+        terminationConditions: [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        };
+      }
+    >;
 
     calculateOpenShortPosition(
       lendable: string,
@@ -1061,25 +1061,25 @@ export class Router extends BaseContract {
         BigNumber,
         BigNumber,
         BigNumber,
-          [BigNumber, BigNumber, BigNumber, BigNumber] & {
+        [BigNumber, BigNumber, BigNumber, BigNumber] & {
           expirationDate: BigNumber;
           stopLossPercentage: BigNumber;
           takeProfitPercentage: BigNumber;
           terminationReward: BigNumber;
         }
       ] & {
-      maxAmountIn: BigNumber;
-      borrowAmount: BigNumber;
-      borrowRate: BigNumber;
-      liquidationCost: BigNumber;
-      terminationConditions: [BigNumber, BigNumber, BigNumber, BigNumber] & {
-        expirationDate: BigNumber;
-        stopLossPercentage: BigNumber;
-        takeProfitPercentage: BigNumber;
-        terminationReward: BigNumber;
-      };
-    }
-      >;
+        maxAmountIn: BigNumber;
+        borrowAmount: BigNumber;
+        borrowRate: BigNumber;
+        liquidationCost: BigNumber;
+        terminationConditions: [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        };
+      }
+    >;
 
     calculateProxyBalance(
       lendable: string,
@@ -1090,12 +1090,12 @@ export class Router extends BaseContract {
       overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber] & {
-      amountOut: BigNumber;
-      profit: BigNumber;
-      debtPayable: BigNumber;
-      protocolFee: BigNumber;
-    }
-      >;
+        amountOut: BigNumber;
+        profit: BigNumber;
+        debtPayable: BigNumber;
+        protocolFee: BigNumber;
+      }
+    >;
 
     calculateProxyShortBalance(
       lendable: string,
@@ -1106,12 +1106,12 @@ export class Router extends BaseContract {
       overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber] & {
-      amountOut: BigNumber;
-      profit: BigNumber;
-      debtPayable: BigNumber;
-      protocolFee: BigNumber;
-    }
-      >;
+        amountOut: BigNumber;
+        profit: BigNumber;
+        debtPayable: BigNumber;
+        protocolFee: BigNumber;
+      }
+    >;
 
     calculateShortBalance(
       lendable: string,
@@ -1121,12 +1121,12 @@ export class Router extends BaseContract {
       overrides?: CallOverrides
     ): Promise<
       [BigNumber, BigNumber, BigNumber, BigNumber] & {
-      amountOut: BigNumber;
-      profit: BigNumber;
-      debtPayable: BigNumber;
-      protocolFee: BigNumber;
-    }
-      >;
+        amountOut: BigNumber;
+        profit: BigNumber;
+        debtPayable: BigNumber;
+        protocolFee: BigNumber;
+      }
+    >;
 
     closePosition(
       request: {
@@ -1182,29 +1182,29 @@ export class Router extends BaseContract {
         BigNumber,
         BigNumber,
         BigNumber,
-          [BigNumber, BigNumber, BigNumber, BigNumber] & {
+        [BigNumber, BigNumber, BigNumber, BigNumber] & {
           expirationDate: BigNumber;
           stopLossPercentage: BigNumber;
           takeProfitPercentage: BigNumber;
           terminationReward: BigNumber;
         }
       ] & {
-      amount: BigNumber;
-      value: BigNumber;
-      selfValue: BigNumber;
-      principalDebt: BigNumber;
-      currentDebt: BigNumber;
-      rate: BigNumber;
-      currentCost: BigNumber;
-      liquidationCost: BigNumber;
-      terminationConditions: [BigNumber, BigNumber, BigNumber, BigNumber] & {
-        expirationDate: BigNumber;
-        stopLossPercentage: BigNumber;
-        takeProfitPercentage: BigNumber;
-        terminationReward: BigNumber;
-      };
-    }
-      >;
+        amount: BigNumber;
+        value: BigNumber;
+        selfValue: BigNumber;
+        principalDebt: BigNumber;
+        currentDebt: BigNumber;
+        rate: BigNumber;
+        currentCost: BigNumber;
+        liquidationCost: BigNumber;
+        terminationConditions: [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        };
+      }
+    >;
 
     getProxyPosition(
       trader: string,
@@ -1222,29 +1222,29 @@ export class Router extends BaseContract {
         BigNumber,
         BigNumber,
         BigNumber,
-          [BigNumber, BigNumber, BigNumber, BigNumber] & {
+        [BigNumber, BigNumber, BigNumber, BigNumber] & {
           expirationDate: BigNumber;
           stopLossPercentage: BigNumber;
           takeProfitPercentage: BigNumber;
           terminationReward: BigNumber;
         }
       ] & {
-      amount: BigNumber;
-      value: BigNumber;
-      selfValue: BigNumber;
-      principalDebt: BigNumber;
-      currentDebt: BigNumber;
-      rate: BigNumber;
-      currentCost: BigNumber;
-      liquidationCost: BigNumber;
-      terminationConditions: [BigNumber, BigNumber, BigNumber, BigNumber] & {
-        expirationDate: BigNumber;
-        stopLossPercentage: BigNumber;
-        takeProfitPercentage: BigNumber;
-        terminationReward: BigNumber;
-      };
-    }
-      >;
+        amount: BigNumber;
+        value: BigNumber;
+        selfValue: BigNumber;
+        principalDebt: BigNumber;
+        currentDebt: BigNumber;
+        rate: BigNumber;
+        currentCost: BigNumber;
+        liquidationCost: BigNumber;
+        terminationConditions: [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        };
+      }
+    >;
 
     getProxyShortPosition(
       trader: string,
@@ -1262,29 +1262,29 @@ export class Router extends BaseContract {
         BigNumber,
         BigNumber,
         BigNumber,
-          [BigNumber, BigNumber, BigNumber, BigNumber] & {
+        [BigNumber, BigNumber, BigNumber, BigNumber] & {
           expirationDate: BigNumber;
           stopLossPercentage: BigNumber;
           takeProfitPercentage: BigNumber;
           terminationReward: BigNumber;
         }
       ] & {
-      amount: BigNumber;
-      value: BigNumber;
-      selfValue: BigNumber;
-      principalDebt: BigNumber;
-      currentDebt: BigNumber;
-      rate: BigNumber;
-      currentCost: BigNumber;
-      liquidationCost: BigNumber;
-      terminationConditions: [BigNumber, BigNumber, BigNumber, BigNumber] & {
-        expirationDate: BigNumber;
-        stopLossPercentage: BigNumber;
-        takeProfitPercentage: BigNumber;
-        terminationReward: BigNumber;
-      };
-    }
-      >;
+        amount: BigNumber;
+        value: BigNumber;
+        selfValue: BigNumber;
+        principalDebt: BigNumber;
+        currentDebt: BigNumber;
+        rate: BigNumber;
+        currentCost: BigNumber;
+        liquidationCost: BigNumber;
+        terminationConditions: [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        };
+      }
+    >;
 
     getShortPosition(
       trader: string,
@@ -1301,29 +1301,29 @@ export class Router extends BaseContract {
         BigNumber,
         BigNumber,
         BigNumber,
-          [BigNumber, BigNumber, BigNumber, BigNumber] & {
+        [BigNumber, BigNumber, BigNumber, BigNumber] & {
           expirationDate: BigNumber;
           stopLossPercentage: BigNumber;
           takeProfitPercentage: BigNumber;
           terminationReward: BigNumber;
         }
       ] & {
-      amount: BigNumber;
-      value: BigNumber;
-      selfValue: BigNumber;
-      principalDebt: BigNumber;
-      currentDebt: BigNumber;
-      rate: BigNumber;
-      currentCost: BigNumber;
-      liquidationCost: BigNumber;
-      terminationConditions: [BigNumber, BigNumber, BigNumber, BigNumber] & {
-        expirationDate: BigNumber;
-        stopLossPercentage: BigNumber;
-        takeProfitPercentage: BigNumber;
-        terminationReward: BigNumber;
-      };
-    }
-      >;
+        amount: BigNumber;
+        value: BigNumber;
+        selfValue: BigNumber;
+        principalDebt: BigNumber;
+        currentDebt: BigNumber;
+        rate: BigNumber;
+        currentCost: BigNumber;
+        liquidationCost: BigNumber;
+        terminationConditions: [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        };
+      }
+    >;
 
     incentivize(
       token: string,

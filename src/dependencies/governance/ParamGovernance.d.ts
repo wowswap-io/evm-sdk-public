@@ -33,15 +33,16 @@ interface ParamGovernanceInterface extends ethers.utils.Interface {
     "renounceOwnership()": FunctionFragment;
     "revote(address)": FunctionFragment;
     "setAddress(bytes32,address)": FunctionFragment;
+    "setNoDebtLeverageFactor(uint256)": FunctionFragment;
     "setParamBounds(bytes32,uint256,uint256)": FunctionFragment;
     "setParamsBounds(bytes32[],uint256[],uint256[])": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
     "update()": FunctionFragment;
     "upgradeFeeDistribution()": FunctionFragment;
     "upgradeFeeDistributions(address[])": FunctionFragment;
-    "voteForFeeDistribution(address,tuple)": FunctionFragment;
-    "voteForParam(address,bytes32,uint256)": FunctionFragment;
-    "voteForParams(address,bytes32[],uint256[])": FunctionFragment;
+    "voteForFeeDistribution(address,tuple,tuple)": FunctionFragment;
+    "voteForParam(address,bytes32,uint256,tuple)": FunctionFragment;
+    "voteForParams(address,bytes32[],uint256[],tuple)": FunctionFragment;
     "xWOW()": FunctionFragment;
   };
 
@@ -68,6 +69,10 @@ interface ParamGovernanceInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "setAddress",
     values: [BytesLike, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setNoDebtLeverageFactor",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "setParamBounds",
@@ -100,16 +105,36 @@ interface ParamGovernanceInterface extends ethers.utils.Interface {
         insurance: BigNumberish;
         charity: BigNumberish;
         buyAndBurn: BigNumberish;
+      },
+      {
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
       }
     ]
   ): string;
   encodeFunctionData(
     functionFragment: "voteForParam",
-    values: [string, BytesLike, BigNumberish]
+    values: [
+      string,
+      BytesLike,
+      BigNumberish,
+      {
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      }
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "voteForParams",
-    values: [string, BytesLike[], BigNumberish[]]
+    values: [
+      string,
+      BytesLike[],
+      BigNumberish[],
+      {
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      }
+    ]
   ): string;
   encodeFunctionData(functionFragment: "xWOW", values?: undefined): string;
 
@@ -131,6 +156,10 @@ interface ParamGovernanceInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "revote", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "setAddress", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "setNoDebtLeverageFactor",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "setParamBounds",
     data: BytesLike
@@ -282,6 +311,11 @@ export class ParamGovernance extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    setNoDebtLeverageFactor(
+      noDebtLeverageFactor: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     setParamBounds(
       parameter: BytesLike,
       minValue: BigNumberish,
@@ -323,6 +357,10 @@ export class ParamGovernance extends BaseContract {
         charity: BigNumberish;
         buyAndBurn: BigNumberish;
       },
+      votePermission: {
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      },
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -330,6 +368,10 @@ export class ParamGovernance extends BaseContract {
       holder: string,
       name: BytesLike,
       value: BigNumberish,
+      votePermission: {
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      },
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -337,6 +379,10 @@ export class ParamGovernance extends BaseContract {
       holder: string,
       names: BytesLike[],
       values: BigNumberish[],
+      votePermission: {
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      },
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -398,6 +444,11 @@ export class ParamGovernance extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  setNoDebtLeverageFactor(
+    noDebtLeverageFactor: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   setParamBounds(
     parameter: BytesLike,
     minValue: BigNumberish,
@@ -439,6 +490,10 @@ export class ParamGovernance extends BaseContract {
       charity: BigNumberish;
       buyAndBurn: BigNumberish;
     },
+    votePermission: {
+      deadline: BigNumberish;
+      signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+    },
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -446,6 +501,10 @@ export class ParamGovernance extends BaseContract {
     holder: string,
     name: BytesLike,
     value: BigNumberish,
+    votePermission: {
+      deadline: BigNumberish;
+      signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+    },
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -453,6 +512,10 @@ export class ParamGovernance extends BaseContract {
     holder: string,
     names: BytesLike[],
     values: BigNumberish[],
+    votePermission: {
+      deadline: BigNumberish;
+      signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+    },
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -506,6 +569,11 @@ export class ParamGovernance extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    setNoDebtLeverageFactor(
+      noDebtLeverageFactor: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     setParamBounds(
       parameter: BytesLike,
       minValue: BigNumberish,
@@ -543,6 +611,10 @@ export class ParamGovernance extends BaseContract {
         charity: BigNumberish;
         buyAndBurn: BigNumberish;
       },
+      votePermission: {
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      },
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -550,6 +622,10 @@ export class ParamGovernance extends BaseContract {
       holder: string,
       name: BytesLike,
       value: BigNumberish,
+      votePermission: {
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      },
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -557,6 +633,10 @@ export class ParamGovernance extends BaseContract {
       holder: string,
       names: BytesLike[],
       values: BigNumberish[],
+      votePermission: {
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      },
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -610,6 +690,11 @@ export class ParamGovernance extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    setNoDebtLeverageFactor(
+      noDebtLeverageFactor: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     setParamBounds(
       parameter: BytesLike,
       minValue: BigNumberish,
@@ -651,6 +736,10 @@ export class ParamGovernance extends BaseContract {
         charity: BigNumberish;
         buyAndBurn: BigNumberish;
       },
+      votePermission: {
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      },
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -658,6 +747,10 @@ export class ParamGovernance extends BaseContract {
       holder: string,
       name: BytesLike,
       value: BigNumberish,
+      votePermission: {
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      },
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -665,6 +758,10 @@ export class ParamGovernance extends BaseContract {
       holder: string,
       names: BytesLike[],
       values: BigNumberish[],
+      votePermission: {
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      },
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -719,6 +816,11 @@ export class ParamGovernance extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    setNoDebtLeverageFactor(
+      noDebtLeverageFactor: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     setParamBounds(
       parameter: BytesLike,
       minValue: BigNumberish,
@@ -760,6 +862,10 @@ export class ParamGovernance extends BaseContract {
         charity: BigNumberish;
         buyAndBurn: BigNumberish;
       },
+      votePermission: {
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      },
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -767,6 +873,10 @@ export class ParamGovernance extends BaseContract {
       holder: string,
       name: BytesLike,
       value: BigNumberish,
+      votePermission: {
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      },
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -774,6 +884,10 @@ export class ParamGovernance extends BaseContract {
       holder: string,
       names: BytesLike[],
       values: BigNumberish[],
+      votePermission: {
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      },
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

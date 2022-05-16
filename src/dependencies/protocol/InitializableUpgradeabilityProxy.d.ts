@@ -17,7 +17,7 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface InitializableUpgradeabilityProxyInterface
   extends ethers.utils.Interface {
@@ -38,6 +38,8 @@ interface InitializableUpgradeabilityProxyInterface
 
   getEvent(nameOrSignatureOrTopic: "Upgraded"): EventFragment;
 }
+
+export type UpgradedEvent = TypedEvent<[string] & { implementation: string }>;
 
 export class InitializableUpgradeabilityProxy extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -105,6 +107,10 @@ export class InitializableUpgradeabilityProxy extends BaseContract {
   };
 
   filters: {
+    "Upgraded(address)"(
+      implementation?: string | null
+    ): TypedEventFilter<[string], { implementation: string }>;
+
     Upgraded(
       implementation?: string | null
     ): TypedEventFilter<[string], { implementation: string }>;

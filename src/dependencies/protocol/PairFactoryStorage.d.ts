@@ -17,15 +17,25 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface PairFactoryStorageInterface extends ethers.utils.Interface {
   functions: {
+    "m_pairImplementation()": FunctionFragment;
+    "m_shortingPairImplementation()": FunctionFragment;
     "owner()": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
   };
 
+  encodeFunctionData(
+    functionFragment: "m_pairImplementation",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "m_shortingPairImplementation",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "renounceOwnership",
@@ -36,6 +46,14 @@ interface PairFactoryStorageInterface extends ethers.utils.Interface {
     values: [string]
   ): string;
 
+  decodeFunctionResult(
+    functionFragment: "m_pairImplementation",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "m_shortingPairImplementation",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "renounceOwnership",
@@ -52,6 +70,10 @@ interface PairFactoryStorageInterface extends ethers.utils.Interface {
 
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
 }
+
+export type OwnershipTransferredEvent = TypedEvent<
+  [string, string] & { previousOwner: string; newOwner: string }
+>;
 
 export class PairFactoryStorage extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -97,6 +119,10 @@ export class PairFactoryStorage extends BaseContract {
   interface: PairFactoryStorageInterface;
 
   functions: {
+    m_pairImplementation(overrides?: CallOverrides): Promise<[string]>;
+
+    m_shortingPairImplementation(overrides?: CallOverrides): Promise<[string]>;
+
     owner(overrides?: CallOverrides): Promise<[string]>;
 
     renounceOwnership(
@@ -108,6 +134,10 @@ export class PairFactoryStorage extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
+
+  m_pairImplementation(overrides?: CallOverrides): Promise<string>;
+
+  m_shortingPairImplementation(overrides?: CallOverrides): Promise<string>;
 
   owner(overrides?: CallOverrides): Promise<string>;
 
@@ -121,6 +151,10 @@ export class PairFactoryStorage extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    m_pairImplementation(overrides?: CallOverrides): Promise<string>;
+
+    m_shortingPairImplementation(overrides?: CallOverrides): Promise<string>;
+
     owner(overrides?: CallOverrides): Promise<string>;
 
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
@@ -132,6 +166,14 @@ export class PairFactoryStorage extends BaseContract {
   };
 
   filters: {
+    "OwnershipTransferred(address,address)"(
+      previousOwner?: string | null,
+      newOwner?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { previousOwner: string; newOwner: string }
+    >;
+
     OwnershipTransferred(
       previousOwner?: string | null,
       newOwner?: string | null
@@ -142,6 +184,10 @@ export class PairFactoryStorage extends BaseContract {
   };
 
   estimateGas: {
+    m_pairImplementation(overrides?: CallOverrides): Promise<BigNumber>;
+
+    m_shortingPairImplementation(overrides?: CallOverrides): Promise<BigNumber>;
+
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
     renounceOwnership(
@@ -155,6 +201,14 @@ export class PairFactoryStorage extends BaseContract {
   };
 
   populateTransaction: {
+    m_pairImplementation(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    m_shortingPairImplementation(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     renounceOwnership(

@@ -17,10 +17,11 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface ReserveInterface extends ethers.utils.Interface {
   functions: {
+    "DOMAIN_SEPARATOR()": FunctionFragment;
     "REVISION()": FunctionFragment;
     "allowance(address,address)": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
@@ -47,12 +48,16 @@ interface ReserveInterface extends ethers.utils.Interface {
     "getUtilizationRate()": FunctionFragment;
     "increaseAllowance(address,uint256)": FunctionFragment;
     "initialize(address,address,string,string,address)": FunctionFragment;
+    "isActive()": FunctionFragment;
     "liquidate(address)": FunctionFragment;
     "liquidityOf(address)": FunctionFragment;
     "migrate()": FunctionFragment;
     "name()": FunctionFragment;
+    "nonces(address)": FunctionFragment;
     "owner()": FunctionFragment;
+    "permit(address,address,uint256,uint256,uint8,bytes32,bytes32)": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
+    "repair(uint256,uint256,int256,address[],int256[])": FunctionFragment;
     "repay(address,address)": FunctionFragment;
     "shareOf(address)": FunctionFragment;
     "sweepFee()": FunctionFragment;
@@ -66,6 +71,10 @@ interface ReserveInterface extends ethers.utils.Interface {
     "withdraw(address,address)": FunctionFragment;
   };
 
+  encodeFunctionData(
+    functionFragment: "DOMAIN_SEPARATOR",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "REVISION", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "allowance",
@@ -149,14 +158,32 @@ interface ReserveInterface extends ethers.utils.Interface {
     functionFragment: "initialize",
     values: [string, string, string, string, string]
   ): string;
+  encodeFunctionData(functionFragment: "isActive", values?: undefined): string;
   encodeFunctionData(functionFragment: "liquidate", values: [string]): string;
   encodeFunctionData(functionFragment: "liquidityOf", values: [string]): string;
   encodeFunctionData(functionFragment: "migrate", values?: undefined): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
+  encodeFunctionData(functionFragment: "nonces", values: [string]): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "permit",
+    values: [
+      string,
+      string,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BytesLike,
+      BytesLike
+    ]
+  ): string;
   encodeFunctionData(
     functionFragment: "renounceOwnership",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "repair",
+    values: [BigNumberish, BigNumberish, BigNumberish, string[], BigNumberish[]]
   ): string;
   encodeFunctionData(
     functionFragment: "repay",
@@ -194,6 +221,10 @@ interface ReserveInterface extends ethers.utils.Interface {
     values: [string, string]
   ): string;
 
+  decodeFunctionResult(
+    functionFragment: "DOMAIN_SEPARATOR",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "REVISION", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "allowance", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
@@ -262,6 +293,7 @@ interface ReserveInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "isActive", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "liquidate", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "liquidityOf",
@@ -269,11 +301,14 @@ interface ReserveInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "migrate", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "nonces", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "permit", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "renounceOwnership",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "repair", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "repay", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "shareOf", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "sweepFee", data: BytesLike): Result;
@@ -324,6 +359,62 @@ interface ReserveInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "Withdraw"): EventFragment;
 }
 
+export type ApprovalEvent = TypedEvent<
+  [string, string, BigNumber] & {
+    owner: string;
+    spender: string;
+    value: BigNumber;
+  }
+>;
+
+export type BorrowEvent = TypedEvent<
+  [string, string, BigNumber] & {
+    reserve: string;
+    trader: string;
+    amount: BigNumber;
+  }
+>;
+
+export type DepositEvent = TypedEvent<
+  [string, string, BigNumber] & {
+    reserve: string;
+    investor: string;
+    amount: BigNumber;
+  }
+>;
+
+export type FillEvent = TypedEvent<
+  [string, BigNumber] & { reserve: string; amount: BigNumber }
+>;
+
+export type LiquidateEvent = TypedEvent<
+  [string, string] & { reserve: string; trader: string }
+>;
+
+export type OwnershipTransferredEvent = TypedEvent<
+  [string, string] & { previousOwner: string; newOwner: string }
+>;
+
+export type RepayEvent = TypedEvent<
+  [string, string, BigNumber] & {
+    reserve: string;
+    trader: string;
+    amount: BigNumber;
+  }
+>;
+
+export type TransferEvent = TypedEvent<
+  [string, string, BigNumber] & { from: string; to: string; value: BigNumber }
+>;
+
+export type WithdrawEvent = TypedEvent<
+  [string, string, BigNumber] & {
+    reserve: string;
+    investor: string;
+    amount: BigNumber;
+  }
+>;
+
 export class Reserve extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
@@ -368,6 +459,8 @@ export class Reserve extends BaseContract {
   interface: ReserveInterface;
 
   functions: {
+    DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<[string]>;
+
     REVISION(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     allowance(
@@ -520,6 +613,8 @@ export class Reserve extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    isActive(overrides?: CallOverrides): Promise<[boolean]>;
+
     liquidate(
       trader: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -536,9 +631,31 @@ export class Reserve extends BaseContract {
 
     name(overrides?: CallOverrides): Promise<[string]>;
 
+    nonces(owner: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+
     owner(overrides?: CallOverrides): Promise<[string]>;
 
+    permit(
+      owner: string,
+      spender: string,
+      value: BigNumberish,
+      deadline: BigNumberish,
+      v: BigNumberish,
+      r: BytesLike,
+      s: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     renounceOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    repair(
+      totalDebt: BigNumberish,
+      debtAverageRate: BigNumberish,
+      reserveDebtIncrease: BigNumberish,
+      accounts: string[],
+      balances: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -591,6 +708,8 @@ export class Reserve extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
+
+  DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<string>;
 
   REVISION(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -734,6 +853,8 @@ export class Reserve extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  isActive(overrides?: CallOverrides): Promise<boolean>;
+
   liquidate(
     trader: string,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -747,9 +868,31 @@ export class Reserve extends BaseContract {
 
   name(overrides?: CallOverrides): Promise<string>;
 
+  nonces(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
+
   owner(overrides?: CallOverrides): Promise<string>;
 
+  permit(
+    owner: string,
+    spender: string,
+    value: BigNumberish,
+    deadline: BigNumberish,
+    v: BigNumberish,
+    r: BytesLike,
+    s: BytesLike,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   renounceOwnership(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  repair(
+    totalDebt: BigNumberish,
+    debtAverageRate: BigNumberish,
+    reserveDebtIncrease: BigNumberish,
+    accounts: string[],
+    balances: BigNumberish[],
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -803,6 +946,8 @@ export class Reserve extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<string>;
+
     REVISION(overrides?: CallOverrides): Promise<BigNumber>;
 
     allowance(
@@ -940,6 +1085,8 @@ export class Reserve extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    isActive(overrides?: CallOverrides): Promise<boolean>;
+
     liquidate(trader: string, overrides?: CallOverrides): Promise<void>;
 
     liquidityOf(
@@ -951,9 +1098,31 @@ export class Reserve extends BaseContract {
 
     name(overrides?: CallOverrides): Promise<string>;
 
+    nonces(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
+
     owner(overrides?: CallOverrides): Promise<string>;
 
+    permit(
+      owner: string,
+      spender: string,
+      value: BigNumberish,
+      deadline: BigNumberish,
+      v: BigNumberish,
+      r: BytesLike,
+      s: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
+
+    repair(
+      totalDebt: BigNumberish,
+      debtAverageRate: BigNumberish,
+      reserveDebtIncrease: BigNumberish,
+      accounts: string[],
+      balances: BigNumberish[],
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     repay(
       pair: string,
@@ -1004,6 +1173,15 @@ export class Reserve extends BaseContract {
   };
 
   filters: {
+    "Approval(address,address,uint256)"(
+      owner?: string | null,
+      spender?: string | null,
+      value?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { owner: string; spender: string; value: BigNumber }
+    >;
+
     Approval(
       owner?: string | null,
       spender?: string | null,
@@ -1011,6 +1189,15 @@ export class Reserve extends BaseContract {
     ): TypedEventFilter<
       [string, string, BigNumber],
       { owner: string; spender: string; value: BigNumber }
+    >;
+
+    "Borrow(address,address,uint256)"(
+      reserve?: string | null,
+      trader?: string | null,
+      amount?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { reserve: string; trader: string; amount: BigNumber }
     >;
 
     Borrow(
@@ -1022,6 +1209,15 @@ export class Reserve extends BaseContract {
       { reserve: string; trader: string; amount: BigNumber }
     >;
 
+    "Deposit(address,address,uint256)"(
+      reserve?: string | null,
+      investor?: string | null,
+      amount?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { reserve: string; investor: string; amount: BigNumber }
+    >;
+
     Deposit(
       reserve?: string | null,
       investor?: string | null,
@@ -1029,6 +1225,14 @@ export class Reserve extends BaseContract {
     ): TypedEventFilter<
       [string, string, BigNumber],
       { reserve: string; investor: string; amount: BigNumber }
+    >;
+
+    "Fill(address,uint256)"(
+      reserve?: string | null,
+      amount?: null
+    ): TypedEventFilter<
+      [string, BigNumber],
+      { reserve: string; amount: BigNumber }
     >;
 
     Fill(
@@ -1039,10 +1243,23 @@ export class Reserve extends BaseContract {
       { reserve: string; amount: BigNumber }
     >;
 
+    "Liquidate(address,address)"(
+      reserve?: string | null,
+      trader?: string | null
+    ): TypedEventFilter<[string, string], { reserve: string; trader: string }>;
+
     Liquidate(
       reserve?: string | null,
       trader?: string | null
     ): TypedEventFilter<[string, string], { reserve: string; trader: string }>;
+
+    "OwnershipTransferred(address,address)"(
+      previousOwner?: string | null,
+      newOwner?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { previousOwner: string; newOwner: string }
+    >;
 
     OwnershipTransferred(
       previousOwner?: string | null,
@@ -1050,6 +1267,15 @@ export class Reserve extends BaseContract {
     ): TypedEventFilter<
       [string, string],
       { previousOwner: string; newOwner: string }
+    >;
+
+    "Repay(address,address,uint256)"(
+      reserve?: string | null,
+      trader?: string | null,
+      amount?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { reserve: string; trader: string; amount: BigNumber }
     >;
 
     Repay(
@@ -1061,6 +1287,15 @@ export class Reserve extends BaseContract {
       { reserve: string; trader: string; amount: BigNumber }
     >;
 
+    "Transfer(address,address,uint256)"(
+      from?: string | null,
+      to?: string | null,
+      value?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { from: string; to: string; value: BigNumber }
+    >;
+
     Transfer(
       from?: string | null,
       to?: string | null,
@@ -1068,6 +1303,15 @@ export class Reserve extends BaseContract {
     ): TypedEventFilter<
       [string, string, BigNumber],
       { from: string; to: string; value: BigNumber }
+    >;
+
+    "Withdraw(address,address,uint256)"(
+      reserve?: string | null,
+      investor?: string | null,
+      amount?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { reserve: string; investor: string; amount: BigNumber }
     >;
 
     Withdraw(
@@ -1081,6 +1325,8 @@ export class Reserve extends BaseContract {
   };
 
   estimateGas: {
+    DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<BigNumber>;
+
     REVISION(overrides?: CallOverrides): Promise<BigNumber>;
 
     allowance(
@@ -1185,6 +1431,8 @@ export class Reserve extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    isActive(overrides?: CallOverrides): Promise<BigNumber>;
+
     liquidate(
       trader: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1201,9 +1449,31 @@ export class Reserve extends BaseContract {
 
     name(overrides?: CallOverrides): Promise<BigNumber>;
 
+    nonces(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
+
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
+    permit(
+      owner: string,
+      spender: string,
+      value: BigNumberish,
+      deadline: BigNumberish,
+      v: BigNumberish,
+      r: BytesLike,
+      s: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     renounceOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    repair(
+      totalDebt: BigNumberish,
+      debtAverageRate: BigNumberish,
+      reserveDebtIncrease: BigNumberish,
+      accounts: string[],
+      balances: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1258,6 +1528,8 @@ export class Reserve extends BaseContract {
   };
 
   populateTransaction: {
+    DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     REVISION(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     allowance(
@@ -1371,6 +1643,8 @@ export class Reserve extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    isActive(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     liquidate(
       trader: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1387,9 +1661,34 @@ export class Reserve extends BaseContract {
 
     name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    nonces(
+      owner: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    permit(
+      owner: string,
+      spender: string,
+      value: BigNumberish,
+      deadline: BigNumberish,
+      v: BigNumberish,
+      r: BytesLike,
+      s: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     renounceOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    repair(
+      totalDebt: BigNumberish,
+      debtAverageRate: BigNumberish,
+      reserveDebtIncrease: BigNumberish,
+      accounts: string[],
+      balances: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

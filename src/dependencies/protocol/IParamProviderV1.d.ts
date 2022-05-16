@@ -17,7 +17,7 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface IParamProviderV1Interface extends ethers.utils.Interface {
   functions: {
@@ -44,7 +44,7 @@ interface IParamProviderV1Interface extends ethers.utils.Interface {
     "setMinWOWBalance(uint256,uint256)": FunctionFragment;
     "setOptimalSlope(uint256)": FunctionFragment;
     "setOptimalUtilization(uint256)": FunctionFragment;
-    "setParameters(tuple)": FunctionFragment;
+    "setParameters((uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256))": FunctionFragment;
     "setPoolUtilizationAllowance(uint256)": FunctionFragment;
     "setTraderProfitFee(uint256)": FunctionFragment;
     "setTreasureFactor(uint256)": FunctionFragment;

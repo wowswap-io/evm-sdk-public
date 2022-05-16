@@ -17,7 +17,7 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface ParamProviderInterface extends ethers.utils.Interface {
   functions: {
@@ -25,11 +25,16 @@ interface ParamProviderInterface extends ethers.utils.Interface {
     "FEE_TOKEN()": FunctionFragment;
     "REVISION()": FunctionFragment;
     "WOW()": FunctionFragment;
+    "activate()": FunctionFragment;
     "baseBorrowRate()": FunctionFragment;
+    "deactivate()": FunctionFragment;
     "excessSlope()": FunctionFragment;
+    "expirationPeriod()": FunctionFragment;
     "feeToken()": FunctionFragment;
+    "getAddress(bytes32)": FunctionFragment;
     "guardedPriceSigner()": FunctionFragment;
     "initialize(address,address,uint256,uint256)": FunctionFragment;
+    "isActive()": FunctionFragment;
     "liquidationMargin()": FunctionFragment;
     "liquidationReward()": FunctionFragment;
     "maxLeverageFactor()": FunctionFragment;
@@ -38,6 +43,7 @@ interface ParamProviderInterface extends ethers.utils.Interface {
     "maxRateMultiplier()": FunctionFragment;
     "minPositionDeposit()": FunctionFragment;
     "minWOWBalance(uint256)": FunctionFragment;
+    "noDebtLeverageFactor()": FunctionFragment;
     "optimalSlope()": FunctionFragment;
     "optimalUtilization()": FunctionFragment;
     "overrideAddress(bytes32,address)": FunctionFragment;
@@ -74,15 +80,28 @@ interface ParamProviderInterface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "FEE_TOKEN", values?: undefined): string;
   encodeFunctionData(functionFragment: "REVISION", values?: undefined): string;
   encodeFunctionData(functionFragment: "WOW", values?: undefined): string;
+  encodeFunctionData(functionFragment: "activate", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "baseBorrowRate",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "deactivate",
     values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "excessSlope",
     values?: undefined
   ): string;
+  encodeFunctionData(
+    functionFragment: "expirationPeriod",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "feeToken", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "getAddress",
+    values: [BytesLike]
+  ): string;
   encodeFunctionData(
     functionFragment: "guardedPriceSigner",
     values?: undefined
@@ -91,6 +110,7 @@ interface ParamProviderInterface extends ethers.utils.Interface {
     functionFragment: "initialize",
     values: [string, string, BigNumberish, BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "isActive", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "liquidationMargin",
     values?: undefined
@@ -122,6 +142,10 @@ interface ParamProviderInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "minWOWBalance",
     values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "noDebtLeverageFactor",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "optimalSlope",
@@ -224,20 +248,28 @@ interface ParamProviderInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "FEE_TOKEN", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "REVISION", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "WOW", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "activate", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "baseBorrowRate",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "deactivate", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "excessSlope",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "expirationPeriod",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "feeToken", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "getAddress", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "guardedPriceSigner",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "isActive", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "liquidationMargin",
     data: BytesLike
@@ -268,6 +300,10 @@ interface ParamProviderInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "minWOWBalance",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "noDebtLeverageFactor",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -365,6 +401,10 @@ interface ParamProviderInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
 }
 
+export type OwnershipTransferredEvent = TypedEvent<
+  [string, string] & { previousOwner: string; newOwner: string }
+>;
+
 export class ParamProvider extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
@@ -417,11 +457,23 @@ export class ParamProvider extends BaseContract {
 
     WOW(overrides?: CallOverrides): Promise<[string]>;
 
+    activate(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     baseBorrowRate(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    deactivate(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     excessSlope(overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    expirationPeriod(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     feeToken(overrides?: CallOverrides): Promise<[string]>;
+
+    getAddress(name: BytesLike, overrides?: CallOverrides): Promise<[string]>;
 
     guardedPriceSigner(overrides?: CallOverrides): Promise<[string]>;
 
@@ -432,6 +484,8 @@ export class ParamProvider extends BaseContract {
       minPositionDeposit: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    isActive(overrides?: CallOverrides): Promise<[boolean]>;
 
     liquidationMargin(overrides?: CallOverrides): Promise<[BigNumber]>;
 
@@ -451,6 +505,8 @@ export class ParamProvider extends BaseContract {
       leverageFactor: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
+
+    noDebtLeverageFactor(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     optimalSlope(overrides?: CallOverrides): Promise<[BigNumber]>;
 
@@ -548,11 +604,23 @@ export class ParamProvider extends BaseContract {
 
   WOW(overrides?: CallOverrides): Promise<string>;
 
+  activate(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   baseBorrowRate(overrides?: CallOverrides): Promise<BigNumber>;
+
+  deactivate(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   excessSlope(overrides?: CallOverrides): Promise<BigNumber>;
 
+  expirationPeriod(overrides?: CallOverrides): Promise<BigNumber>;
+
   feeToken(overrides?: CallOverrides): Promise<string>;
+
+  getAddress(name: BytesLike, overrides?: CallOverrides): Promise<string>;
 
   guardedPriceSigner(overrides?: CallOverrides): Promise<string>;
 
@@ -563,6 +631,8 @@ export class ParamProvider extends BaseContract {
     minPositionDeposit: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  isActive(overrides?: CallOverrides): Promise<boolean>;
 
   liquidationMargin(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -582,6 +652,8 @@ export class ParamProvider extends BaseContract {
     leverageFactor: BigNumberish,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
+
+  noDebtLeverageFactor(overrides?: CallOverrides): Promise<BigNumber>;
 
   optimalSlope(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -679,11 +751,19 @@ export class ParamProvider extends BaseContract {
 
     WOW(overrides?: CallOverrides): Promise<string>;
 
+    activate(overrides?: CallOverrides): Promise<void>;
+
     baseBorrowRate(overrides?: CallOverrides): Promise<BigNumber>;
+
+    deactivate(overrides?: CallOverrides): Promise<void>;
 
     excessSlope(overrides?: CallOverrides): Promise<BigNumber>;
 
+    expirationPeriod(overrides?: CallOverrides): Promise<BigNumber>;
+
     feeToken(overrides?: CallOverrides): Promise<string>;
+
+    getAddress(name: BytesLike, overrides?: CallOverrides): Promise<string>;
 
     guardedPriceSigner(overrides?: CallOverrides): Promise<string>;
 
@@ -694,6 +774,8 @@ export class ParamProvider extends BaseContract {
       minPositionDeposit: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    isActive(overrides?: CallOverrides): Promise<boolean>;
 
     liquidationMargin(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -713,6 +795,8 @@ export class ParamProvider extends BaseContract {
       leverageFactor: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    noDebtLeverageFactor(overrides?: CallOverrides): Promise<BigNumber>;
 
     optimalSlope(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -790,6 +874,14 @@ export class ParamProvider extends BaseContract {
   };
 
   filters: {
+    "OwnershipTransferred(address,address)"(
+      previousOwner?: string | null,
+      newOwner?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { previousOwner: string; newOwner: string }
+    >;
+
     OwnershipTransferred(
       previousOwner?: string | null,
       newOwner?: string | null
@@ -808,11 +900,23 @@ export class ParamProvider extends BaseContract {
 
     WOW(overrides?: CallOverrides): Promise<BigNumber>;
 
+    activate(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     baseBorrowRate(overrides?: CallOverrides): Promise<BigNumber>;
+
+    deactivate(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     excessSlope(overrides?: CallOverrides): Promise<BigNumber>;
 
+    expirationPeriod(overrides?: CallOverrides): Promise<BigNumber>;
+
     feeToken(overrides?: CallOverrides): Promise<BigNumber>;
+
+    getAddress(name: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
 
     guardedPriceSigner(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -823,6 +927,8 @@ export class ParamProvider extends BaseContract {
       minPositionDeposit: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    isActive(overrides?: CallOverrides): Promise<BigNumber>;
 
     liquidationMargin(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -842,6 +948,8 @@ export class ParamProvider extends BaseContract {
       leverageFactor: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    noDebtLeverageFactor(overrides?: CallOverrides): Promise<BigNumber>;
 
     optimalSlope(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -940,11 +1048,26 @@ export class ParamProvider extends BaseContract {
 
     WOW(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    activate(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     baseBorrowRate(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    deactivate(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
     excessSlope(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    expirationPeriod(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     feeToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    getAddress(
+      name: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     guardedPriceSigner(
       overrides?: CallOverrides
@@ -957,6 +1080,8 @@ export class ParamProvider extends BaseContract {
       minPositionDeposit: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
+
+    isActive(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     liquidationMargin(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -978,6 +1103,10 @@ export class ParamProvider extends BaseContract {
 
     minWOWBalance(
       leverageFactor: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    noDebtLeverageFactor(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

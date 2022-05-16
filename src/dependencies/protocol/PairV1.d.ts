@@ -17,7 +17,7 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface PairV1Interface extends ethers.utils.Interface {
   functions: {
@@ -205,6 +205,38 @@ interface PairV1Interface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
 }
 
+export type ApprovalEvent = TypedEvent<
+  [string, string, BigNumber] & {
+    owner: string;
+    spender: string;
+    value: BigNumber;
+  }
+>;
+
+export type ChangedPositionEvent = TypedEvent<
+  [string, BigNumber, BigNumber, BigNumber, BigNumber] & {
+    trader: string;
+    amount: BigNumber;
+    loan: BigNumber;
+    cost: BigNumber;
+    liquidationCost: BigNumber;
+  }
+>;
+
+export type LiquidatedEvent = TypedEvent<
+  [string, BigNumber, BigNumber, BigNumber, BigNumber] & {
+    trader: string;
+    amount: BigNumber;
+    loanPaid: BigNumber;
+    cost: BigNumber;
+    liquidationCost: BigNumber;
+  }
+>;
+
+export type TransferEvent = TypedEvent<
+  [string, string, BigNumber] & { from: string; to: string; value: BigNumber }
+>;
+
 export class PairV1 extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
@@ -319,7 +351,13 @@ export class PairV1 extends BaseContract {
           BigNumber,
           BigNumber,
           BigNumber,
-          BigNumber
+          BigNumber,
+          [BigNumber, BigNumber, BigNumber, BigNumber] & {
+            expirationDate: BigNumber;
+            stopLossPercentage: BigNumber;
+            takeProfitPercentage: BigNumber;
+            terminationReward: BigNumber;
+          }
         ] & {
           amount: BigNumber;
           value: BigNumber;
@@ -329,6 +367,17 @@ export class PairV1 extends BaseContract {
           rate: BigNumber;
           currentCost: BigNumber;
           liquidationCost: BigNumber;
+          terminationConditions: [
+            BigNumber,
+            BigNumber,
+            BigNumber,
+            BigNumber
+          ] & {
+            expirationDate: BigNumber;
+            stopLossPercentage: BigNumber;
+            takeProfitPercentage: BigNumber;
+            terminationReward: BigNumber;
+          };
         }
       ] & {
         position: [
@@ -339,7 +388,13 @@ export class PairV1 extends BaseContract {
           BigNumber,
           BigNumber,
           BigNumber,
-          BigNumber
+          BigNumber,
+          [BigNumber, BigNumber, BigNumber, BigNumber] & {
+            expirationDate: BigNumber;
+            stopLossPercentage: BigNumber;
+            takeProfitPercentage: BigNumber;
+            terminationReward: BigNumber;
+          }
         ] & {
           amount: BigNumber;
           value: BigNumber;
@@ -349,6 +404,17 @@ export class PairV1 extends BaseContract {
           rate: BigNumber;
           currentCost: BigNumber;
           liquidationCost: BigNumber;
+          terminationConditions: [
+            BigNumber,
+            BigNumber,
+            BigNumber,
+            BigNumber
+          ] & {
+            expirationDate: BigNumber;
+            stopLossPercentage: BigNumber;
+            takeProfitPercentage: BigNumber;
+            terminationReward: BigNumber;
+          };
         };
       }
     >;
@@ -489,7 +555,13 @@ export class PairV1 extends BaseContract {
       BigNumber,
       BigNumber,
       BigNumber,
-      BigNumber
+      BigNumber,
+      [BigNumber, BigNumber, BigNumber, BigNumber] & {
+        expirationDate: BigNumber;
+        stopLossPercentage: BigNumber;
+        takeProfitPercentage: BigNumber;
+        terminationReward: BigNumber;
+      }
     ] & {
       amount: BigNumber;
       value: BigNumber;
@@ -499,6 +571,12 @@ export class PairV1 extends BaseContract {
       rate: BigNumber;
       currentCost: BigNumber;
       liquidationCost: BigNumber;
+      terminationConditions: [BigNumber, BigNumber, BigNumber, BigNumber] & {
+        expirationDate: BigNumber;
+        stopLossPercentage: BigNumber;
+        takeProfitPercentage: BigNumber;
+        terminationReward: BigNumber;
+      };
     }
   >;
 
@@ -638,7 +716,13 @@ export class PairV1 extends BaseContract {
         BigNumber,
         BigNumber,
         BigNumber,
-        BigNumber
+        BigNumber,
+        [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        }
       ] & {
         amount: BigNumber;
         value: BigNumber;
@@ -648,6 +732,12 @@ export class PairV1 extends BaseContract {
         rate: BigNumber;
         currentCost: BigNumber;
         liquidationCost: BigNumber;
+        terminationConditions: [BigNumber, BigNumber, BigNumber, BigNumber] & {
+          expirationDate: BigNumber;
+          stopLossPercentage: BigNumber;
+          takeProfitPercentage: BigNumber;
+          terminationReward: BigNumber;
+        };
       }
     >;
 
@@ -719,6 +809,15 @@ export class PairV1 extends BaseContract {
   };
 
   filters: {
+    "Approval(address,address,uint256)"(
+      owner?: string | null,
+      spender?: string | null,
+      value?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { owner: string; spender: string; value: BigNumber }
+    >;
+
     Approval(
       owner?: string | null,
       spender?: string | null,
@@ -726,6 +825,23 @@ export class PairV1 extends BaseContract {
     ): TypedEventFilter<
       [string, string, BigNumber],
       { owner: string; spender: string; value: BigNumber }
+    >;
+
+    "ChangedPosition(address,uint256,uint256,uint256,uint256)"(
+      trader?: string | null,
+      amount?: null,
+      loan?: null,
+      cost?: null,
+      liquidationCost?: null
+    ): TypedEventFilter<
+      [string, BigNumber, BigNumber, BigNumber, BigNumber],
+      {
+        trader: string;
+        amount: BigNumber;
+        loan: BigNumber;
+        cost: BigNumber;
+        liquidationCost: BigNumber;
+      }
     >;
 
     ChangedPosition(
@@ -740,6 +856,23 @@ export class PairV1 extends BaseContract {
         trader: string;
         amount: BigNumber;
         loan: BigNumber;
+        cost: BigNumber;
+        liquidationCost: BigNumber;
+      }
+    >;
+
+    "Liquidated(address,uint256,uint256,uint256,uint256)"(
+      trader?: string | null,
+      amount?: null,
+      loanPaid?: null,
+      cost?: null,
+      liquidationCost?: null
+    ): TypedEventFilter<
+      [string, BigNumber, BigNumber, BigNumber, BigNumber],
+      {
+        trader: string;
+        amount: BigNumber;
+        loanPaid: BigNumber;
         cost: BigNumber;
         liquidationCost: BigNumber;
       }
@@ -760,6 +893,15 @@ export class PairV1 extends BaseContract {
         cost: BigNumber;
         liquidationCost: BigNumber;
       }
+    >;
+
+    "Transfer(address,address,uint256)"(
+      from?: string | null,
+      to?: string | null,
+      value?: null
+    ): TypedEventFilter<
+      [string, string, BigNumber],
+      { from: string; to: string; value: BigNumber }
     >;
 
     Transfer(

@@ -17,7 +17,7 @@ import {
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
 interface IParamGovernanceInterface extends ethers.utils.Interface {
   functions: {
@@ -26,13 +26,16 @@ interface IParamGovernanceInterface extends ethers.utils.Interface {
     "getParam(bytes32)": FunctionFragment;
     "getParams()": FunctionFragment;
     "getVotes(address)": FunctionFragment;
+    "isLiquidator(address)": FunctionFragment;
+    "registerAsLiquidator()": FunctionFragment;
     "revote(address)": FunctionFragment;
     "setAddress(bytes32,address)": FunctionFragment;
+    "setNoDebtLeverageFactor(uint256)": FunctionFragment;
     "setParamBounds(bytes32,uint256,uint256)": FunctionFragment;
     "setParamsBounds(bytes32[],uint256[],uint256[])": FunctionFragment;
-    "voteForFeeDistribution(address,tuple)": FunctionFragment;
-    "voteForParam(address,bytes32,uint256)": FunctionFragment;
-    "voteForParams(address,bytes32[],uint256[])": FunctionFragment;
+    "voteForFeeDistribution(address,(uint256,uint256,uint256,uint256,uint256),(uint256,(uint8,bytes32,bytes32)))": FunctionFragment;
+    "voteForParam(address,bytes32,uint256,(uint256,(uint8,bytes32,bytes32)))": FunctionFragment;
+    "voteForParams(address,bytes32[],uint256[],(uint256,(uint8,bytes32,bytes32)))": FunctionFragment;
     "xWOW()": FunctionFragment;
   };
 
@@ -47,10 +50,22 @@ interface IParamGovernanceInterface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "getParam", values: [BytesLike]): string;
   encodeFunctionData(functionFragment: "getParams", values?: undefined): string;
   encodeFunctionData(functionFragment: "getVotes", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "isLiquidator",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "registerAsLiquidator",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "revote", values: [string]): string;
   encodeFunctionData(
     functionFragment: "setAddress",
     values: [BytesLike, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setNoDebtLeverageFactor",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "setParamBounds",
@@ -70,16 +85,36 @@ interface IParamGovernanceInterface extends ethers.utils.Interface {
         insurance: BigNumberish;
         charity: BigNumberish;
         buyAndBurn: BigNumberish;
+      },
+      {
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
       }
     ]
   ): string;
   encodeFunctionData(
     functionFragment: "voteForParam",
-    values: [string, BytesLike, BigNumberish]
+    values: [
+      string,
+      BytesLike,
+      BigNumberish,
+      {
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      }
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "voteForParams",
-    values: [string, BytesLike[], BigNumberish[]]
+    values: [
+      string,
+      BytesLike[],
+      BigNumberish[],
+      {
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      }
+    ]
   ): string;
   encodeFunctionData(functionFragment: "xWOW", values?: undefined): string;
 
@@ -91,8 +126,20 @@ interface IParamGovernanceInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "getParam", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "getParams", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "getVotes", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "isLiquidator",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "registerAsLiquidator",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "revote", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "setAddress", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "setNoDebtLeverageFactor",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "setParamBounds",
     data: BytesLike
@@ -183,6 +230,15 @@ export class IParamGovernance extends BaseContract {
       [string[], BigNumber[]] & { names: string[]; values: BigNumber[] }
     >;
 
+    isLiquidator(
+      liquidator: string,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
+    registerAsLiquidator(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     revote(
       holder: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -191,6 +247,11 @@ export class IParamGovernance extends BaseContract {
     setAddress(
       name: BytesLike,
       value: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setNoDebtLeverageFactor(
+      noDebtLeverageFactor: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -217,6 +278,10 @@ export class IParamGovernance extends BaseContract {
         charity: BigNumberish;
         buyAndBurn: BigNumberish;
       },
+      votePermission: {
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      },
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -224,6 +289,10 @@ export class IParamGovernance extends BaseContract {
       holder: string,
       name: BytesLike,
       value: BigNumberish,
+      votePermission: {
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      },
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -231,6 +300,10 @@ export class IParamGovernance extends BaseContract {
       holder: string,
       names: BytesLike[],
       values: BigNumberish[],
+      votePermission: {
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      },
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -258,6 +331,12 @@ export class IParamGovernance extends BaseContract {
     [string[], BigNumber[]] & { names: string[]; values: BigNumber[] }
   >;
 
+  isLiquidator(liquidator: string, overrides?: CallOverrides): Promise<boolean>;
+
+  registerAsLiquidator(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   revote(
     holder: string,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -266,6 +345,11 @@ export class IParamGovernance extends BaseContract {
   setAddress(
     name: BytesLike,
     value: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setNoDebtLeverageFactor(
+    noDebtLeverageFactor: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -292,6 +376,10 @@ export class IParamGovernance extends BaseContract {
       charity: BigNumberish;
       buyAndBurn: BigNumberish;
     },
+    votePermission: {
+      deadline: BigNumberish;
+      signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+    },
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -299,6 +387,10 @@ export class IParamGovernance extends BaseContract {
     holder: string,
     name: BytesLike,
     value: BigNumberish,
+    votePermission: {
+      deadline: BigNumberish;
+      signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+    },
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -306,6 +398,10 @@ export class IParamGovernance extends BaseContract {
     holder: string,
     names: BytesLike[],
     values: BigNumberish[],
+    votePermission: {
+      deadline: BigNumberish;
+      signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+    },
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -341,11 +437,23 @@ export class IParamGovernance extends BaseContract {
       [string[], BigNumber[]] & { names: string[]; values: BigNumber[] }
     >;
 
+    isLiquidator(
+      liquidator: string,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    registerAsLiquidator(overrides?: CallOverrides): Promise<void>;
+
     revote(holder: string, overrides?: CallOverrides): Promise<void>;
 
     setAddress(
       name: BytesLike,
       value: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setNoDebtLeverageFactor(
+      noDebtLeverageFactor: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -372,6 +480,10 @@ export class IParamGovernance extends BaseContract {
         charity: BigNumberish;
         buyAndBurn: BigNumberish;
       },
+      votePermission: {
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      },
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -379,6 +491,10 @@ export class IParamGovernance extends BaseContract {
       holder: string,
       name: BytesLike,
       value: BigNumberish,
+      votePermission: {
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      },
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -386,6 +502,10 @@ export class IParamGovernance extends BaseContract {
       holder: string,
       names: BytesLike[],
       values: BigNumberish[],
+      votePermission: {
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      },
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -407,6 +527,15 @@ export class IParamGovernance extends BaseContract {
 
     getVotes(holder: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+    isLiquidator(
+      liquidator: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    registerAsLiquidator(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     revote(
       holder: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -415,6 +544,11 @@ export class IParamGovernance extends BaseContract {
     setAddress(
       name: BytesLike,
       value: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setNoDebtLeverageFactor(
+      noDebtLeverageFactor: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -441,6 +575,10 @@ export class IParamGovernance extends BaseContract {
         charity: BigNumberish;
         buyAndBurn: BigNumberish;
       },
+      votePermission: {
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      },
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -448,6 +586,10 @@ export class IParamGovernance extends BaseContract {
       holder: string,
       name: BytesLike,
       value: BigNumberish,
+      votePermission: {
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      },
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -455,6 +597,10 @@ export class IParamGovernance extends BaseContract {
       holder: string,
       names: BytesLike[],
       values: BigNumberish[],
+      votePermission: {
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      },
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -485,6 +631,15 @@ export class IParamGovernance extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    isLiquidator(
+      liquidator: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    registerAsLiquidator(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     revote(
       holder: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -493,6 +648,11 @@ export class IParamGovernance extends BaseContract {
     setAddress(
       name: BytesLike,
       value: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setNoDebtLeverageFactor(
+      noDebtLeverageFactor: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -519,6 +679,10 @@ export class IParamGovernance extends BaseContract {
         charity: BigNumberish;
         buyAndBurn: BigNumberish;
       },
+      votePermission: {
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      },
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -526,6 +690,10 @@ export class IParamGovernance extends BaseContract {
       holder: string,
       name: BytesLike,
       value: BigNumberish,
+      votePermission: {
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      },
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -533,6 +701,10 @@ export class IParamGovernance extends BaseContract {
       holder: string,
       names: BytesLike[],
       values: BigNumberish[],
+      votePermission: {
+        deadline: BigNumberish;
+        signature: { v: BigNumberish; r: BytesLike; s: BytesLike };
+      },
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
