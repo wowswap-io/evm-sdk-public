@@ -1,0 +1,1 @@
+export type BlockTag = number | "latest"
